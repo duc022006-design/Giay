@@ -1,0 +1,71 @@
+/* ===== PRODUCT SECTION ===== */
+.product {
+    padding: 20px 40px;
+}
+
+/* ===== PRODUCT LIST ===== */
+.product-list {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+    overflow-x: auto; /* kéo ngang */
+    padding-bottom: 10px;
+}
+
+/* ===== PRODUCT ITEM ===== */
+.product-item {
+    min-width: 250px;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+/* Hover card */
+.product-item:hover {
+    transform: translateY(-5px);
+}
+
+/* ===== PRODUCT IMAGE ===== */
+.product-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* ===== PRODUCT NAME ===== */
+.product-item h2 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #333;
+}
+
+/* ===== PRODUCT PRICE ===== */
+.product-item p {
+    color: #1f1c1c;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ===== VIDEO BANNER (CHUNG) ===== */
+/* ===== VIDEO BANNER ===== */
+.video-banner {
+    width: 100%;
+    height: 450px;
+    overflow: hidden;
+}
+
+/* ===== VIDEO ===== */
+.video-banner video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* full đẹp nhưng cắt nhẹ */
+    display: block;
+}
+body {
+    margin: 0; /* Tránh hở viền trăng ở hai bên của video*/
+}

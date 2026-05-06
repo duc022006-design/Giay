@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Owner</title>
+    <link rel="stylesheet" type="text/css" href="../CSS/owner.css">
+</head>
+
+<body>
+    <main class="admin-container">
+        <section class="admin-header">
+            <img src="../images/Logo.png" alt="Avatar" class="admin-avatar">
+            <div class="owner-info">
+                <h1>Xin chào, Chủ Cửa Hàng!</h1>
+                <p>Email: admin@ducshoes.com | Cấp bậc: Quản trị viên</p>
+            </div>
+        </section>
+
+        <div class="admin-content">
+            <section class="add-product-section">
+                <h2>➕ Thêm Sản Phẩm Mới</h2>
+                <form id="add-product-form">
+                    <div class="form-group">
+                        <label>Tên sản phẩm (*)</label>
+                        <input type="text" id="shoe-name" placeholder="VD: Nike Air Max" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hãng (*)</label>
+                            <select id="shoe-brand" required>
+                                <option value="" disabled selected hidden>Chọn hãng</option>
+                                <option value="Nike">Nike</option>
+                                <option value="Adidas">Adidas</option>
+                                <option value="Puma">Puma</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Giá tiền (VNĐ) (*)</label>
+                            <input type="number" id="shoe-price" placeholder="VD: 2500000" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link hình ảnh (*)</label>
+                        <input type="url" id="shoe-img" placeholder="https://..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả chi tiết</label>
+                        <textarea id="shoe-desc" rows="3" placeholder="Nhập mô tả sản phẩm..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Lưu Sản Phẩm</button>
+                </form>
+            </section>
+
+            <section class="inventory-section">
+                <h2>📦 Kho Hàng Của Bạn</h2>
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Hãng</th>
+                                <th>Giá bán</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Đang tải dữ liệu...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="../js/owner.js"></script>
+</body>
+
+</html>

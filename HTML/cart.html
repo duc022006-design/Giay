@@ -1,39 +1,84 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Giỏ hàng</title>
-        <link rel="stylesheet" type="text/css" href="../../CSS/cart.css">
-        <script src="script.js" defer></script>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <!-- Header -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" type="text/css" href="../CSS/cart.css">
+    <link rel="stylesheet" type="text/css" href="../CSS/header.css">
+    <link rel="stylesheet" type="text/css" href="../CSS/footer.css">
+</head>
+
+<body>
+    <div id="header">
         <header class="main-header">
             <ul>
-                <li class="logo"><a href="../home.html"><img src="../../images/Logo.png" alt="Logo"></a></li>
-                <li><a href="../home.html">Trang chủ</a></li>
-                <li><a href="../products.html">Sản phẩm</a></li>
-                <li><a href="../about.html">Giới thiệu</a></li>
-                <li><a href="../register.html"><button>Đăng ký</button></a></li>
-                <li><a href="../login.html"><button>Đăng nhập</button></a></li>  
-                <li><a href="../cart.html"> <img src="../../images/shopping-cart (2).png" alt="Giỏ hàng"> <button></button></a></li>
+                <li class="logo"><a href="../home.html"><img src="../images/Logo.png" alt="Logo"></a></li>
+                <li><a href="home.html">Trang chủ</a></li>
+                <li><a href="products.html">Sản phẩm</a></li>
+                <li><a href="about.html">Giới thiệu</a></li>
+                <li><a href="component/header.html"><button>Đăng xuất</button></a></li>
+                <li><a href="cart.html"> <img src="../images/shopping-cart (2).png" alt="Giỏ hàng"></a></li>
             </ul>
         </header>
+    </div>
 
-        <!-- Main content -->
-        <main class="cart-container">
-            <h1>Giỏ hàng của bạn</h1>
-            <!-- Giỏ hàng sẽ được hiển thị ở đây -->
-            <div id="cart-items"></div>
-            <!-- Tổng tiền -->
-            <div class="cart-total">
-                <h2>Tổng tiền: $<span id="total-price">0.00</span></h2>
-                <button id="checkout-button">Thanh toán</button>
+    <div id="main">
+        <h1>Giỏ hàng của bạn</h1>
+
+        <div class="cart-container">
+
+            <!-- BÊN TRÁI -->
+            <div class="cart-left">
+                <div class="cart-item">
+                    <input type="checkbox" class="select-item">
+
+                    <figure>
+                        <img src="../images/nike.jpg" alt="Nike Air">
+                    </figure>
+
+                    <div class="info">
+                        <h2>Nike Air</h2>
+                        <p>Size: 42</p>
+                        <p>Màu: Đen</p>
+                        <p>Giá: 2.500.000đ</p>
+
+                        <select class="quantity">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+
+                        <button class="remove">Xóa</button>
+                    </div>
+                </div>
             </div>
-        </main>
 
-        <!-- Footer -->
-        <footer class="main-footer">
-            &copy; 2024 My Shoe Store. All rights reserved.
-        </footer>
-    </body>
+            <!-- BÊN PHẢI -->
+            <div class="cart-right">
+                <h2>Tổng thanh toán</h2>
+                <p>Tạm tính: 0đ</p>
+                <p>Giảm giá: 0đ</p>
+                <h3>Tổng cộng: 0đ</h3>
+                <button class="checkout">Thanh toán</button>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <h1>Liên hệ với chúng tôi</h1>
+        <ul>
+            <li><a href="https://www.facebook.com/djd.jd.94695/" target="_blank"><img src="../images/facebook.png"
+                        alt="Facebook"> </a></li>
+            <li><a href="https://www.tiktok.com/@laiduc55" target="_blank"><img src="../images/tik-tok.png"
+                        alt="Tiktok"> </a>
+            </li>
+            <li><a href="https://www.instagram.com/laithaiduc/" target="_blank"><img src="../images/instagram.png"
+                        alt="Instagram">
+                </a></li>
+        </ul>
+    </footer>
+</body>
+
+</html>

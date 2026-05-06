@@ -2,13 +2,80 @@
 /* ===================== FOOTER ========================== */
 /* ===================================================== */
 
+/* ===================================================== */
+/* ===================== FOOTER ========================== */
+/* ===================================================== */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 footer {
-  margin-top: 80px;
   padding: 40px 20px;
   background: #ffffff;
   text-align: center;
   border-top: 1px solid #eee;
   box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+  margin-top: auto;
+}
+
+/* Title */
+footer h1 {
+  font-size: 22px;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* List icon */
+footer ul {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  list-style: none;
+}
+
+/* Item */
+footer li {
+  transition: 0.3s;
+}
+
+/* Link */
+footer a {
+  display: inline-block;
+  padding: 12px;
+  border-radius: 50%;
+  background: #f5f7fa;
+  transition: 0.3s;
+}
+
+/* Icon */
+footer img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* Hover effect */
+footer li:hover {
+  transform: translateY(-5px);
+}
+
+footer a:hover {
+  background: linear-gradient(135deg, #007bff, #00a6ff);
+  box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+}
+
+footer a:hover img {
+  filter: brightness(0) invert(1);
+}
+footer {
+  padding: 40px 20px;
+  background: #ffffff;
+  text-align: center;
+  border-top: 1px solid #eee;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+  margin-top: auto;
 }
 
 /* Title */
