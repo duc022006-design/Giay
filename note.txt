@@ -1,0 +1,11 @@
+- cd "D:\Users\Tuan Anh\tuananhstore" --> D:
+- cài django: pip install djangorestframework
+- python: python --version
+	pip --version
+- http://localhost:8000/
+- python manage.py runserver
+- Postman : 
+	+) Xem tất cả sản phẩm có trong giỏ hang : http://localhost:8000/api/products/
+	+) Lấy thông tin chi tiết của từng sản phẩm : http://localhost:8000/api/products/1/
+	+) Lấy danh sách các món hàng trong giỏ : http://localhost:8000/api/cart-items/
+	+) Thêm sản phẩm vào giỏ hàng : POST http://localhost:8000/api/add-to-cart/

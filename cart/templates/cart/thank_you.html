@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảm ơn!</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 5em; }
+        .button { display: inline-block; margin-top: 2em; padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Cảm ơn bạn đã đặt hàng!</h1>
+    <p>Đơn hàng của bạn đã được ghi nhận.</p>
+    {% if order %}
+        <p>Mã đơn hàng của bạn là: #{{ order.id }}</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="button">Quay về trang chủ</a>
+</body>
+</html>

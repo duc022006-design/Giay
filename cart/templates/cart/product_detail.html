@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.ten }} - Tuấn Anh Store</title>
+</head>
+<body>
+
+    <h1>{{ product.ten }}</h1>
+    <p>Giá: {{ product.gia_tien }} VND</p>
+    <p>ID sản phẩm này là: {{ product.id }}</p>
+
+    <div>
+        <div class="form-group">
+            <label for="quantity">Số lượng:</label>
+            <input type="number" id="quantity" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label for="size">Chọn Size:</label>
+            <input type="number" id="size" value="40" min="35">
+        </div>
+        <button id="addToCartBtn">Thêm vào giỏ hàng</button>
+    </div>
+    
+    <div id="message" style="color: green; margin-top: 1em;"></div>
+
+    <hr>
+    <a href="{% url 'cart_page' %}">Xem giỏ hàng</a> | 
+    <a href="{% url 'home' %}">Quay lại trang chủ</a>
+
+    <script>
+        // Lấy nút "Thêm vào giỏ hàng"
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        
+        // Khi người dùng click vào nút
+        addToCartBtn.addEventListener('click', function() {
+            // Lấy giá trị từ các ô nhập liệu
+            const quantity = document.getElementById('quantity').value;
+            const size = document.getElementById('size').value;
+            // Lấy ID sản phẩm từ template Django
+            const productId = {{ product.id }};
+
+            // Chuẩn bị dữ liệu để gửi đi
+            const data = {
+                product_id: productId,
+                size: parseInt(size),
+                quantity: parseInt(quantity)
+            };
+
+            // Gửi yêu cầu POST đến API bằng fetch
+            fetch("{% url 'add_to_cart_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                // Hiển thị thông báo từ server
+                document.getElementById('message').innerText = result.message || result.error;
+                console.log('Success:', result);
+            })
+            .catch(error => {
+                document.getElementById('message').innerText = 'Có lỗi xảy ra.';
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+</body>
+</html>

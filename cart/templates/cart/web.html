@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tuấn Anh Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f8f8;
+    }
+
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .product img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .product h3 {
+      margin: 10px 0 5px;
+    }
+
+    .price {
+      color: green;
+      font-weight: bold;
+    }
+
+    .product button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .product button:hover {
+      background-color: #218838;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #222;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Tuấn Anh Store</h1>
+  </header>
+
+  <section class="products">
+
+    <!-- Sản phẩm 1 -->
+    <div class="product">
+      <img src= "{%static 'cart/images/gtcut.jpg' %}" alt="Giày 1">
+      <h3>GT Cut 2 Black/White</h3>
+      <p class="price">2.800.000đ</p>
+      <button onclick="addToCart(this)" data-name="GT Cut 2 Black/White" data-price="2800000" data-image="gtcut.jpg"
+        data-size="42">Thêm vào giỏ</button>
+    </div>
+
+    <!-- Sản phẩm 2 -->
+    <div class="product">
+      <img src="{%static 'cart/images/kd17tb.jpg' %}" alt="Giày 2">
+      <h3>KD 17 TB</h3>
+      <p class="price">3.499.000đ</p>
+      <button onclick="addToCart(this)" data-name="KD 17 TB" data-price="3499000" data-image="kd17tb.jpg"
+        data-size="43">Thêm vào giỏ</button>
+    </div>
+
+    <!-- Sản phẩm 3 -->
+    <div class="product">
+      <img src="{%static 'cart/images/jd1.jpg' %}" alt="Giày 3">
+      <h3>Jordan 1 Low</h3>
+      <p class="price">2.650.000đ</p>
+      <button onclick="addToCart(this)" data-name="Jordan 1 Low" data-price="2650000" data-image="jd1.jpg"
+        data-size="41">Thêm vào giỏ</button>
+    </div>
+
+  </section>
+
+  <footer>
+    &copy; 2025 Tuấn Anh Store
+  </footer>
+
+  <!-- SCRIPT: Gửi dữ liệu về Django -->
+  <script>
+    function addToCart(button) {
+      const item = {
+        name: button.dataset.name,
+        price: parseInt(button.dataset.price),
+        image: button.dataset.image,
+        size: parseInt(button.dataset.size),
+        quantity: 1
+      };
+
+      fetch("http://127.0.0.1:8000/cart/add/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(item)
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Không thể thêm vào giỏ hàng.");
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message || "Đã thêm vào giỏ hàng!");
+        })
+        .catch(error => {
+          console.error("Lỗi:", error);
+          alert("Có lỗi xảy ra khi thêm vào giỏ.");
+        });
+    }
+  </script>
+
+</body>
+
+</html>
