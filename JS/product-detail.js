@@ -61,10 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadProductDetail(id) {
     try {
-        const response = await fetch(`${API_BASE_URL}/products/${id}/`);
+        const token = localStorage.getItem('token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const response = await fetch(`${API_BASE_URL}/products/${id}/`, { headers });
         if (response.ok) {
             currentProduct = await response.json();
             renderProductDetail(currentProduct);
+            loadProductReviews(id);
         } else {
             throw new Error("Không lấy được thông tin từ API");
         }
@@ -263,5 +266,206 @@ function showProductError() {
                 <p>Vui lòng quay lại <a href="products.html" style="color: #007bff; font-weight: 600;">Trang sản phẩm</a> và chọn lại.</p>
             </div>
         `;
+    }
+}
+
+// === CÁC HÀM XỬ LÝ ĐÁNH GIÁ & BÌNH LUẬN ===
+let selectedStarRating = 5;
+
+function selectRatingStar(stars) {
+    selectedStarRating = stars;
+    for (let i = 1; i <= 5; i++) {
+        const starBtn = document.getElementById(`star-${i}`);
+        if (starBtn) {
+            if (i <= stars) {
+                starBtn.classList.add('active');
+            } else {
+                starBtn.classList.remove('active');
+            }
+        }
+    }
+}
+
+async function loadProductReviews(productId) {
+    const reviewsContainer = document.getElementById('reviews-container');
+    if (!reviewsContainer) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/reviews/?product_id=${productId}`);
+        if (!response.ok) throw new Error("Lỗi tải đánh giá");
+
+        const reviews = await response.json();
+        renderReviewsSection(reviews, productId);
+    } catch (error) {
+        console.error("Lỗi khi tải bình luận:", error);
+        reviewsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #ff4d4f;">Không thể tải đánh giá sản phẩm.</div>`;
+    }
+}
+
+function renderReviewsSection(reviews, productId) {
+    const reviewsContainer = document.getElementById('reviews-container');
+    if (!reviewsContainer) return;
+
+    // Tính toán số liệu trung bình
+    const totalReviews = reviews.length;
+    let avgRating = 0;
+    if (totalReviews > 0) {
+        const sum = reviews.reduce((acc, curr) => acc + curr.stars, 0);
+        avgRating = (sum / totalReviews).toFixed(1);
+    }
+
+    // Tạo HTML các ngôi sao trung bình
+    let avgStarsHtml = '';
+    const roundedAvg = Math.round(avgRating);
+    for (let i = 1; i <= 5; i++) {
+        avgStarsHtml += `<span style="color: ${i <= roundedAvg ? '#ffc107' : '#e0e0e0'}">★</span>`;
+    }
+
+    // Danh sách các review
+    let reviewsListHTML = '';
+    if (totalReviews === 0) {
+        reviewsListHTML = `<p style="text-align: center; color: #888; padding: 40px 0; grid-column: span 2; width: 100%;">Chưa có lượt đánh giá nào cho sản phẩm này. Hãy là người đầu tiên mua và đánh giá sản phẩm!</p>`;
+    } else {
+        reviews.forEach(r => {
+            const initial = r.user ? r.user.charAt(0).toUpperCase() : 'U';
+            const dateStr = new Date(r.created_at).toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<span style="color: ${i <= r.stars ? '#ffc107' : '#e0e0e0'}">★</span>`;
+            }
+
+            reviewsListHTML += `
+                <div class="review-card">
+                    <div class="review-card-header">
+                        <div class="review-user-info">
+                            <div class="user-avatar-circle">${initial}</div>
+                            <div>
+                                <div class="user-name-display">
+                                    ${r.user}
+                                    <span class="buyer-verified-badge"><i class='bx bx-check-shield'></i> Đã mua hàng</span>
+                                </div>
+                                <div class="review-card-stars">${starsHtml}</div>
+                            </div>
+                        </div>
+                        <span class="review-card-date">${dateStr}</span>
+                    </div>
+                    <p class="review-card-content">${r.comment || 'Không có bình luận chi tiết.'}</p>
+                </div>
+            `;
+        });
+    }
+
+    // Khung form đánh giá dựa trên trạng thái người dùng
+    let formHTML = '';
+    if (!isLoggedIn()) {
+        formHTML = `
+            <div class="review-notice">
+                <i class='bx bx-info-circle' style="font-size: 20px;"></i>
+                <span>Bạn cần <a href="login.html" style="color: #007bff; font-weight: 600; text-decoration: underline;">Đăng nhập</a> để viết bình luận và đánh giá sản phẩm này.</span>
+            </div>
+        `;
+    } else if (currentProduct && !currentProduct.has_purchased) {
+        if (currentProduct.has_history) {
+            formHTML = `
+                <div class="review-notice">
+                    <i class='bx bx-check-double' style="font-size: 20px; color: #28a745;"></i>
+                    <span>Bạn đã đánh giá sản phẩm này từ các lần mua trước. Hãy mua thêm để tiếp tục đánh giá!</span>
+                </div>
+            `;
+        } else {
+            formHTML = `
+                <div class="review-notice">
+                    <i class='bx bx-lock-alt' style="font-size: 20px;"></i>
+                    <span>Bạn chỉ có thể gửi đánh giá sau khi đã mua đôi giày này thành công.</span>
+                </div>
+            `;
+        }
+    } else {
+        // Cho phép đánh giá
+        formHTML = `
+            <div class="review-form-card">
+                <h3>Viết đánh giá của bạn</h3>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 14px; color: #555;">Chọn số sao:</span>
+                    <div class="star-rating-select">
+                        <button id="star-1" class="star-select-btn active" onclick="selectRatingStar(1)">★</button>
+                        <button id="star-2" class="star-select-btn active" onclick="selectRatingStar(2)">★</button>
+                        <button id="star-3" class="star-select-btn active" onclick="selectRatingStar(3)">★</button>
+                        <button id="star-4" class="star-select-btn active" onclick="selectRatingStar(4)">★</button>
+                        <button id="star-5" class="star-select-btn active" onclick="selectRatingStar(5)">★</button>
+                    </div>
+                </div>
+                <textarea id="review-comment-input" class="comment-textarea" placeholder="Nhập bình luận đánh giá chi tiết của bạn về chất lượng đôi giày..."></textarea>
+                <button class="submit-review-btn" onclick="submitUserReview(${productId})">Gửi đánh giá</button>
+            </div>
+        `;
+    }
+
+    reviewsContainer.innerHTML = `
+        <h2><i class='bx bx-message-detail'></i> Đánh giá & Bình luận</h2>
+        <div class="reviews-layout">
+            <div class="reviews-sidebar">
+                <div class="reviews-summary-card">
+                    <p class="summary-rating-number">${avgRating}</p>
+                    <div class="summary-stars">${avgStarsHtml}</div>
+                    <p class="summary-count">${totalReviews} đánh giá từ người mua</p>
+                </div>
+                ${formHTML}
+            </div>
+            <div class="reviews-list">
+                ${reviewsListHTML}
+            </div>
+        </div>
+    `;
+    
+    // Đặt mặc định 5 sao nếu form hiển thị
+    if (isLoggedIn() && currentProduct && currentProduct.has_purchased) {
+        selectRatingStar(5);
+    }
+}
+
+async function submitUserReview(productId) {
+    const commentInput = document.getElementById('review-comment-input');
+    const comment = commentInput ? commentInput.value.trim() : '';
+    
+    if (selectedStarRating < 1 || selectedStarRating > 5) {
+        alert("Vui lòng chọn số sao đánh giá hợp lệ (1-5 sao)!");
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) return alert("Vui lòng đăng nhập!");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/reviews/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                product: productId,
+                stars: selectedStarRating,
+                comment: comment
+            })
+        });
+
+        if (response.ok) {
+            alert("Đã gửi đánh giá thành công! Xin cảm ơn nhận xét của bạn.");
+            loadProductDetail(productId); // Tải lại chi tiết sản phẩm để cập nhật trạng thái mua/đánh giá
+        } else {
+            const errData = await response.json();
+            alert("Gửi đánh giá thất bại: " + (errData[0] || errData.non_field_errors || JSON.stringify(errData)));
+        }
+    } catch (err) {
+        console.error("Lỗi khi gửi bình luận:", err);
+        alert("Lỗi kết nối máy chủ.");
     }
 }

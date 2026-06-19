@@ -7,61 +7,58 @@
     <link rel="stylesheet" type="text/css" href="../CSS/products.css">
     <link rel="stylesheet" type="text/css" href="../CSS/header.css">
     <link rel="stylesheet" type="text/css" href="../CSS/footer.css">
+    <script src="../JS/main.js" defer></script>
+    <script src="../JS/products.js" defer></script>
 </head>
 
 <body>
-    <div id="header">
-        <header class="main-header">
-            <ul>
-                <li class="logo"><a href="index.html"><img src="../images/Logo.png" alt="Logo"></a></li>
-                <li><a href="index.html">Trang chủ</a></li>
-                <li><a href="products.html">Sản phẩm</a></li>
-                <li><a href="about.html">Giới thiệu</a></li>
-                <li><a href="component/header.html"><button>Đăng xuất</button></a></li>
-                <li><a href="cart.html"> <img src="../images/shopping-cart (2).png" alt="Giỏ hàng"></a></li>
-            </ul>
-        </header>
-    </div>
+    <!-- Header động -->
+    <div id="header"></div>
     <div class="introduce">
-        <h1>Our Products</h1>
-        <p>Welcome to our product page!</p>
+        <h1>Sản phẩm của chúng tôi</h1>
+        <p>Chào mừng bạn đến với trang danh sách sản phẩm!</p>
     </div>
     <div class="select">
-        <select class="filter" id="filter-price">
-            <option value="" disabled selected hidden>Giá</option>
-            <!-- disabled → không thể chọn được selected → mặc định hiển thị khi chưa chọn gì hidden → biến mất khi mở dropdown -->
-            <option value="price1">Giá 1</option>
-            <option value="price2">Giá 2</option>
-            <option value="price3">Giá 3</option>
-        </select>
-        <select class="filter" id="filter-size">
-            <option value="" disabled selected hidden>Kích cỡ</option>
-            <!-- disabled → không thể chọn được selected → mặc định hiển thị khi chưa chọn gì hidden → biến mất khi mở dropdown -->
-            <option value="size1">Size 1</option>
-            <option value="size2">Size 2</option>
-            <option value="size3">Size 3</option>
-        </select>
-        <select class="filter" id="filter-category">
-            <option value="" disabled selected hidden>Loại giày </option>
-            <!-- disabled → không thể chọn được selected → mặc định hiển thị khi chưa chọn gì hidden → biến mất khi mở dropdown -->
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
-            <option value="category3">Category 3</option>
-        </select>
-        <select class="filter" id="filter-brand">
-            <option value="" disabled selected hidden>Hãng</option>
-            <!-- disabled → không thể chọn được selected → mặc định hiển thị khi chưa chọn gì hidden → biến mất khi mở dropdown -->
-            <option value="brand1">Brand 1</option>
-            <option value="brand2">Brand 2</option>
-            <option value="brand3">Brand 3</option>
-        </select>
-        <select class="filter" id="filter-gender">
-            <option value="" disabled selected hidden>Giới tính</option>
-            <!-- disabled → không thể chọn được selected → mặc định hiển thị khi chưa chọn gì hidden → biến mất khi mở dropdown -->
-            <option value="male">Nam</option>
-            <option value="female">Nữ</option>
-            <option value="unisex">Unisex</option>
-        </select>
+        <div class="custom-select" id="filter-brand">
+            <div class="select-trigger">
+                <span>Tất cả Hãng</span>
+            </div>
+            <div class="custom-options">
+                <div class="custom-option selected" data-value="">Tất cả Hãng</div>
+                <div class="custom-option" data-value="Nike">Nike</div>
+                <div class="custom-option" data-value="Adidas">Adidas</div>
+                <div class="custom-option" data-value="Puma">Puma</div>
+                <div class="custom-option" data-value="Khác">Khác</div>
+            </div>
+        </div>
+        
+        <div class="custom-select" id="filter-price">
+            <div class="select-trigger">
+                <span>Tất cả Mức giá</span>
+            </div>
+            <div class="custom-options">
+                <div class="custom-option selected" data-value="">Tất cả Mức giá</div>
+                <div class="custom-option" data-value="under1">Dưới 1 triệu</div>
+                <div class="custom-option" data-value="1to3">1 - 3 triệu</div>
+                <div class="custom-option" data-value="over3">Trên 3 triệu</div>
+            </div>
+        </div>
+
+        <div class="custom-select" id="filter-size">
+            <div class="select-trigger">
+                <span>Tất cả Kích cỡ</span>
+            </div>
+            <div class="custom-options">
+                <div class="custom-option selected" data-value="">Tất cả Kích cỡ</div>
+                <div class="custom-option" data-value="39">Size 39</div>
+                <div class="custom-option" data-value="40">Size 40</div>
+                <div class="custom-option" data-value="41">Size 41</div>
+                <div class="custom-option" data-value="42">Size 42</div>
+                <div class="custom-option" data-value="43">Size 43</div>
+                <div class="custom-option" data-value="44">Size 44</div>
+                <div class="custom-option" data-value="45">Size 45</div>
+            </div>
+        </div>
     </div>
     <div class="product-section">
         <div id="product-list" class="product-container"></div>

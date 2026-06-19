@@ -4,8 +4,12 @@ from django.db import models
 # Model mới để lưu thông tin sản phẩm gốc
 class Product(models.Model):
     name = models.CharField(max_length=255)
+    brand = models.CharField(max_length=100, default='Khác')
     price = models.DecimalField(max_digits=12, decimal_places=0)
-    image = models.CharField(max_length=255) # Hoặc ImageField
+    quantity = models.PositiveIntegerField(default=0)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='products/')
+    sizes = models.CharField(max_length=255, default='39,40,41,42,43,44,45')
 
     def __str__(self):
         return self.name

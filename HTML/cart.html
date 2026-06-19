@@ -7,14 +7,16 @@
     <link rel="stylesheet" type="text/css" href="../CSS/cart.css">
     <link rel="stylesheet" type="text/css" href="../CSS/header.css">
     <link rel="stylesheet" type="text/css" href="../CSS/footer.css">
+    <script src="../JS/main.js" defer></script>
+    <script src="../JS/cart.js" defer></script>
 </head>
 
 <body>
     <div id="header">
         <header class="main-header">
             <ul>
-                <li class="logo"><a href="../home.html"><img src="../images/Logo.png" alt="Logo"></a></li>
-                <li><a href="home.html">Trang chủ</a></li>
+                <li class="logo"><a href="index.html"><img src="../images/Logo.png" alt="Logo"></a></li>
+                <li><a href="index.html">Trang chủ</a></li>
                 <li><a href="products.html">Sản phẩm</a></li>
                 <li><a href="about.html">Giới thiệu</a></li>
                 <li><a href="component/header.html"><button>Đăng xuất</button></a></li>
@@ -29,29 +31,8 @@
         <div class="cart-container">
 
             <!-- BÊN TRÁI -->
-            <div class="cart-left">
-                <div class="cart-item">
-                    <input type="checkbox" class="select-item">
-
-                    <figure>
-                        <img src="../images/nike.jpg" alt="Nike Air">
-                    </figure>
-
-                    <div class="info">
-                        <h2>Nike Air</h2>
-                        <p>Size: 42</p>
-                        <p>Màu: Đen</p>
-                        <p>Giá: 2.500.000đ</p>
-
-                        <select class="quantity">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                        </select>
-
-                        <button class="remove">Xóa</button>
-                    </div>
-                </div>
+            <div class="cart-left" id="cart-items">
+                <!-- Các sản phẩm trong giỏ hàng sẽ được load tự động từ local storage bằng JS -->
             </div>
 
             <!-- BÊN PHẢI -->
@@ -59,8 +40,8 @@
                 <h2>Tổng thanh toán</h2>
                 <p>Tạm tính: 0đ</p>
                 <p>Giảm giá: 0đ</p>
-                <h3>Tổng cộng: 0đ</h3>
-                <button class="checkout">Thanh toán</button>
+                <h3>Tổng cộng: <span id="cart-total">0đ</span></h3>
+                <button class="checkout" onclick="checkout()">Thanh toán</button>
             </div>
 
         </div>
@@ -74,7 +55,7 @@
             <li><a href="https://www.tiktok.com/@laiduc55" target="_blank"><img src="../images/tik-tok.png"
                         alt="Tiktok"> </a>
             </li>
-            <li><a href="https://www.instagram.com/laithaiduc/" target="_blank"><img src="../images/instagram.png"
+            <li><a href="https://www.instagram.com/laithaiduc/" target="_blank"><img src="../images/instagram.png"agy
                         alt="Instagram">
                 </a></li>
         </ul>

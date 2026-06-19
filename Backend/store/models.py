@@ -81,6 +81,7 @@ class OrderItem(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Người mua")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name="Sản phẩm")
+    order_item = models.OneToOneField(OrderItem, on_delete=models.SET_NULL, null=True, blank=True, related_name='review', verbose_name="Chi tiết đơn hàng")
     stars = models.SmallIntegerField(verbose_name="Số sao")
     comment = models.TextField(blank=True, null=True, verbose_name="Bình luận")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Ngày đánh giá")

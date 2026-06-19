@@ -6,34 +6,21 @@
     <link rel="stylesheet" type="text/css" href="../CSS/header.css">
     <link rel="stylesheet" type="text/css" href="../CSS/footer.css">
     <link rel="stylesheet" type="text/css" href="../CSS/index.css">
-    <script src="script.js" defer></script>
+    <script src="../JS/main.js" defer></script>
+    <script src="../JS/index.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
-    <header class="main-header">
-        <ul>
-            <li class="logo"><a href="../index.html"><img src="../images/Logo.png" alt="Logo"></a></li>
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="products.html">Sản phẩm</a></li>
-            <li><a href="about.html">Giới thiệu</a></li>
-            <li><a href="register.html"><button>Đăng ký</button></a></li>
-            <li><a href="login.html"><button>Đăng nhập</button></a></li>
-            <li><a href="cart.html"> <img src="../images/shopping-cart (2).png" alt="Giỏ hàng"></a></li>
-        </ul>
-    </header>
+    <div id="header"></div>
     <div class="video-banner">
         <video autoplay muted loop playsinline>
             <source src="../images/TVCNike.mp4" type="video/mp4">
         </video>
     </div>
     <div class="product">
-        <div class="product-list">
-            <div class="product-item">
-                <img src="../images/NIKE+ACG+ULTRAFLY+TRAIL.avif" alt="Sản phẩm 1">
-                <h2>Giày Sneaker Nam</h2>
-                <p>Giá: 1.000.000 VND</p>
-            </div>
+        <div class="product-list" id="list-nike">
+            <!-- Sản phẩm Nike sẽ được JS thêm vào đây -->
         </div>
     </div>
     <div class="video-banner">
@@ -42,12 +29,8 @@
         </video>
     </div>
     <div class="product">
-        <div class="product-list">
-            <div class="product-item">
-                <img src="../images/Puma.avif" alt="Sản phẩm 1">
-                <h2>Giày Sneaker Nam</h2>
-                <p>Giá: 1.000.000 VND</p>
-            </div>
+        <div class="product-list" id="list-puma">
+            <!-- Sản phẩm Puma sẽ được JS thêm vào đây -->
         </div>
     </div>
     <div class="video-banner">
@@ -56,12 +39,8 @@
         </video>
     </div>
     <div class="product">
-        <div class="product-list">
-            <div class="product-item">
-                <img src="../images/adidas.jpg" alt="Sản phẩm 1">
-                <h2>Giày Sneaker Nam</h2>
-                <p>Giá: 1.000.000 VND</p>
-            </div>
+        <div class="product-list" id="list-adidas">
+            <!-- Sản phẩm Adidas sẽ được JS thêm vào đây -->
         </div>
     </div>
     <div class="video-banner">
@@ -70,12 +49,8 @@
         </video>
     </div>
     <div class="product">
-        <div class="product-list">
-            <div class="product-item">
-                <img src="../images/giay-da-bong.jpg" alt="Sản phẩm 1">
-                <h2>Giày Sneaker Nam</h2>
-                <p>Giá: 1.000.000 VND</p>
-            </div>
+        <div class="product-list" id="list-other">
+            <!-- Các sản phẩm khác sẽ được JS thêm vào đây -->
         </div>
     </div>
         <footer>

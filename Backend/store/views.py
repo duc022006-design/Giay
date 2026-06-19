@@ -190,4 +190,17 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
         return Review.objects.all().order_by('-created_at')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        from rest_framework.exceptions import ValidationError
+        product = serializer.validated_data.get('product')
+        
+        # Tìm một OrderItem của sản phẩm này chưa từng được đánh giá
+        unreviewed_item = OrderItem.objects.filter(
+            order__user=self.request.user,
+            variant__product=product,
+            review__isnull=True
+        ).first()
+        
+        if not unreviewed_item:
+            raise ValidationError("Bạn không có lượt đánh giá nào còn trống cho sản phẩm này. Hãy mua thêm để tiếp tục đánh giá!")
+            
+        serializer.save(user=self.request.user, order_item=unreviewed_item)

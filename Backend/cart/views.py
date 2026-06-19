@@ -63,7 +63,7 @@ def checkout(request): # xử lý logic khi người dùng ấn thanh toán
     if request.method == 'POST':
         cart_items = CartItem.objects.all()
         if not cart_items:
-            return redirect('cart_page')
+            return JsonResponse({'error': 'Giỏ hàng trống'}, status=400)
         total_price = sum(item.get_total_price() for item in cart_items)
         order = Order.objects.create(total_price=total_price)
 
@@ -76,9 +76,9 @@ def checkout(request): # xử lý logic khi người dùng ấn thanh toán
                 size=item.size
             )
         cart_items.delete()
-        return render(request, 'cart/thank_you.html', {'order': order})
+        return JsonResponse({'message': 'Đặt hàng thành công!', 'order_id': order.id}, status=201)
     
-    return redirect('cart_page')
+    return JsonResponse({'error': 'Yêu cầu không hợp lệ'}, status=405)
 
 
 # === CÁC VIEW DÀNH CHO API (TRẢ VỀ JSON) ===
@@ -143,15 +143,19 @@ def add_multiple_to_cart_api(request):
     
     return JsonResponse({'error': 'Yêu cầu không hợp lệ'}, status=405)
 
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 class ProductListAPIView(generics.ListCreateAPIView):
     """API để lấy danh sách TẤT CẢ sản phẩm."""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """API để lấy/sửa/xóa CHI TIẾT của 1 sản phẩm."""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class CartItemListAPIView(generics.ListAPIView):
     """API để lấy danh sách các món hàng trong giỏ."""

@@ -1,86 +1,297 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="vi">
 <head>
-    <title>Owner</title>
-    <link rel="stylesheet" type="text/css" href="../CSS/owner.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DucShoes | Admin Dashboard</title>
+    <!-- Boxicons (Icons) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Header/Footer CSS -->
+    <link rel="stylesheet" type="text/css" href="../../CSS/header.css">
+    <link rel="stylesheet" type="text/css" href="../../CSS/footer.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="../../CSS/owner.css">
 </head>
 
 <body>
-    <main class="admin-container">
-        <section class="admin-header">
-            <img src="../images/Logo.png" alt="Avatar" class="admin-avatar">
-            <div class="owner-info">
-                <h1>Xin chào, Chủ Cửa Hàng!</h1>
-                <p>Email: admin@ducshoes.com | Cấp bậc: Quản trị viên</p>
+    <div id="header">
+        <header class="main-header">
+            <ul>
+                <li class="logo"><a href="../../index.html"><img src="../../images/Logo.png" alt="Logo"></a></li>
+                <li><a href="../../index.html">Trang chủ</a></li>
+                <li><a href="../products.html">Sản phẩm</a></li>
+                <li><a href="../component/about.html">Giới thiệu</a></li>
+                <li><a href="../login.html"><button>Đăng xuất</button></a></li>
+            </ul>
+        </header>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class='bx bx-shopping-bag'></i> Quản Trị</h2>
             </div>
-        </section>
+            <ul class="nav-links" id="sidebar-menu">
+                <li class="active" data-section="overview"><a href="#" onclick="switchSection('overview'); return false;"><i class='bx bxs-dashboard'></i> Tổng Quan</a></li>
+                <li data-section="products"><a href="#" onclick="switchSection('products'); return false;"><i class='bx bx-package'></i> Sản Phẩm</a></li>
+                <li data-section="orders"><a href="#" onclick="switchSection('orders'); return false;"><i class='bx bx-cart'></i> Đơn Hàng</a></li>
+            </ul>
+        </aside>
 
-        <div class="admin-content">
-            <section class="add-product-section">
-                <h2>➕ Thêm Sản Phẩm Mới</h2>
-                <form id="add-product-form">
-                    <div class="form-group">
-                        <label>Tên sản phẩm (*)</label>
-                        <input type="text" id="shoe-name" placeholder="VD: Nike Air Max" required>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="dashboard-search" placeholder="Tìm kiếm sản phẩm, đơn hàng..." oninput="handleSearch(this.value)">
+                </div>
+                <div class="admin-profile">
+                    <div class="info">
+                        <h3>Xin chào, Chủ Cửa Hàng</h3>
+                        <p>admin@ducshoes.com</p>
                     </div>
+                    <img src="../../images/Logo.png" alt="Admin Avatar" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=Admin&background=007bff&color=fff'">
+                </div>
+            </header>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Hãng (*)</label>
-                            <select id="shoe-brand" required>
-                                <option value="" disabled selected hidden>Chọn hãng</option>
-                                <option value="Nike">Nike</option>
-                                <option value="Adidas">Adidas</option>
-                                <option value="Puma">Puma</option>
-                                <option value="Khác">Khác</option>
-                            </select>
+            <!-- SECTION: TỔNG QUAN (OVERVIEW) -->
+            <section id="overview-section" class="dashboard-section">
+                <!-- Dashboard Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: var(--primary);">
+                            <i class='bx bx-wallet'></i>
                         </div>
-                        <div class="form-group">
-                            <label>Giá tiền (VNĐ) (*)</label>
-                            <input type="number" id="shoe-price" placeholder="VD: 2500000" min="0" required>
+                        <div class="stat-details">
+                            <p>Doanh Thu Tổng</p>
+                            <h3 id="stat-revenue">0đ</h3>
+                            <span class="trend up"><i class='bx bx-up-arrow-alt'></i> Cập nhật liên tục</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class='bx bx-cart-alt'></i>
+                        </div>
+                        <div class="stat-details">
+                            <p>Tổng Đơn Hàng</p>
+                            <h3 id="stat-orders">0</h3>
+                            <span class="trend up"><i class='bx bx-up-arrow-alt'></i> Cập nhật liên tục</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class='bx bx-box'></i>
+                        </div>
+                        <div class="stat-details">
+                            <p>Sản Phẩm Đang Bán</p>
+                            <h3 id="stat-products">0</h3>
+                            <span class="trend neutral">Ổn định</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overview Grid -->
+                <div class="overview-grid" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-top: 24px;">
+                    <!-- Recent Orders -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class='bx bx-time'></i> Đơn Hàng Mới Nhất</h2>
+                            <button class="btn-outline" onclick="switchSection('orders')">Xem tất cả</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã ĐH</th>
+                                        <th>Thời Gian</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-orders-body">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Link hình ảnh (*)</label>
-                        <input type="url" id="shoe-img" placeholder="https://..." required>
+                    <!-- Low Stock Alerts -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class='bx bx-error-alt'></i> Cảnh Báo Kho Hàng</h2>
+                            <button class="btn-outline" onclick="switchSection('products')">Quản lý kho</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản Phẩm</th>
+                                        <th>Tồn Kho</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="low-stock-body">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Mô tả chi tiết</label>
-                        <textarea id="shoe-desc" rows="3" placeholder="Nhập mô tả sản phẩm..."></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit">Lưu Sản Phẩm</button>
-                </form>
+                </div>
             </section>
 
-            <section class="inventory-section">
-                <h2>📦 Kho Hàng Của Bạn</h2>
+            <!-- SECTION: SẢN PHẨM (PRODUCTS) -->
+            <section id="products-section" class="dashboard-section" style="display: none;">
+                <div class="content-grid">
+                    <!-- Add Product Form -->
+                    <section class="card add-product-card">
+                        <div class="card-header">
+                            <h2><i class='bx bx-plus-circle'></i> Thêm Sản Phẩm Mới</h2>
+                        </div>
+                        <form id="addProductForm" class="modern-form">
+                            <div class="form-group">
+                                <label>Tên sản phẩm (*)</label>
+                                <input type="text" id="productName" placeholder="VD: Nike Air Max" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Hãng (*)</label>
+                                    <select id="shoe-brand" required>
+                                        <option value="" disabled selected hidden>Chọn hãng</option>
+                                        <option value="Nike">Nike</option>
+                                        <option value="Adidas">Adidas</option>
+                                        <option value="Puma">Puma</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Giá tiền (VNĐ) (*)</label>
+                                    <input type="number" id="productPrice" placeholder="VD: 2500000" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Số lượng (*)</label>
+                                    <input type="number" id="productQuantity" placeholder="VD: 50" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tải hình ảnh lên (*)</label>
+                                    <input type="file" id="productImageFile" accept="image/*" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Kích cỡ có sẵn (Cách nhau bằng dấu phẩy) (*)</label>
+                                <input type="text" id="productSizes" value="39,40,41,42,43,44,45" placeholder="VD: 39,40,41,42,43,44,45" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mô tả chi tiết</label>
+                                <textarea id="shoe-desc" rows="3" placeholder="Nhập mô tả sản phẩm..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary">Lưu Sản Phẩm</button>
+                        </form>
+                    </section>
+
+                    <!-- Inventory Table -->
+                    <section class="card inventory-card">
+                        <div class="card-header">
+                            <h2><i class='bx bx-package'></i> Kho Hàng Gần Đây</h2>
+                            <button class="btn-outline" onclick="loadProducts()">Làm mới</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản Phẩm</th>
+                                        <th>Hãng</th>
+                                        <th>Giá Bán</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-body">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- SECTION: ĐƠN HÀNG (ORDERS) -->
+            <section id="orders-section" class="dashboard-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class='bx bx-cart'></i> Quản Lý Đơn Hàng</h2>
+                        <button class="btn-outline" onclick="loadOrders()">Tải lại</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn Hàng</th>
+                                    <th>Thời Gian</th>
+                                    <th>Danh Sách Sản Phẩm</th>
+                                    <th>Tổng Tiền</th>
+                                    <th>Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-body">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Chi Tiết Đơn Hàng -->
+    <div id="order-detail-modal" class="modal" onclick="if(event.target === this) closeOrderModal();">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi Tiết Đơn Hàng <span id="modal-order-id">#1</span></h2>
+                <span class="close-btn" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="order-meta">
+                    <p><strong>Ngày đặt hàng:</strong> <span id="modal-order-date">12/12/2026</span></p>
+                    <p><strong>Tổng thanh toán:</strong> <span id="modal-order-total" style="color: var(--danger); font-weight: bold;">0đ</span></p>
+                </div>
                 <div class="table-responsive">
-                    <table class="inventory-table">
+                    <table class="modern-table modal-table">
                         <thead>
                             <tr>
-                                <th>Ảnh</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Hãng</th>
-                                <th>Giá bán</th>
-                                <th>Hành động</th>
+                                <th>Sản Phẩm</th>
+                                <th>Kích Cỡ</th>
+                                <th>Đơn Giá</th>
+                                <th>Số Lượng</th>
+                                <th>Thành Tiền</th>
                             </tr>
                         </thead>
-                        <tbody id="inventory-body">
-                            <tr>
-                                <td colspan="5" style="text-align: center;">Đang tải dữ liệu...</td>
-                            </tr>
+                        <tbody id="modal-order-items">
+                            <!-- Dynamic -->
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
         </div>
-    </main>
 
-    <script src="../js/owner.js"></script>
+    <footer>
+        <h1>Liên hệ với chúng tôi</h1>
+        <ul>
+            <li><a href="https://www.facebook.com/djd.jd.94695/" target="_blank"><img src="../../images/facebook.png" alt="Facebook"></a></li>
+            <li><a href="https://www.tiktok.com/@laiduc55" target="_blank"><img src="../../images/tik-tok.png" alt="Tiktok"></a></li>
+            <li><a href="https://www.instagram.com/laithaiduc/" target="_blank"><img src="../../images/instagram.png" alt="Instagram"></a></li>
+        </ul>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../JS/main.js"></script>
+    <script src="../../JS/owner.js"></script>
 </body>
-
 </html>

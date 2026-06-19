@@ -3,16 +3,17 @@
     <head>
         <title>Đăng nhập - My Shoe Store</title>
         <link rel="stylesheet" type="text/css" href="../CSS/login.css">
+        <link rel="stylesheet" type="text/css" href="../CSS/header.css">
     
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <!-- Include header -->
-        <div id="header-placeholder"></div>
+        <div id="header"></div>
 
         <main class="login-container">
             <h2>Đăng nhập</h2>
-            <form action="/login" method="POST" class="login-form">
+            <form id="loginForm" action="/login" method="POST" class="login-form">
                 <label for="username">Tên đăng nhập:</label>
                 <input type="text" id="username" name="username" required>
 
@@ -23,5 +24,8 @@
             </form>
             <p>Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
         </main>
+        
+        <script src="../JS/main.js"></script>
+        <script src="../JS/login.js"></script>
     </body>
     </html>

@@ -3,15 +3,16 @@
     <head>
         <title>Đăng ký - My Shoe Store</title>
         <link rel="stylesheet" type="text/css" href="../CSS/register.css">
+        <link rel="stylesheet" type="text/css" href="../CSS/header.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <!-- Include header -->
-        <div id="header-placeholder"></div>
+        <div id="header"></div>
 
         <main class="register-container">
             <h2>Đăng ký</h2>
-            <form action="/register" method="POST" class="register-form">
+            <form id="registerForm" action="" method="POST" class="register-form">
                 <label for="username">Tên đăng nhập:</label>
                 <input type="text" id="username" name="username" required>
                 <label for="email">Email:</label>
@@ -20,11 +21,14 @@
                 <label for="password">Mật khẩu:</label>
                 <input type="password" id="password" name="password" required>
                 <label for="confirm_password">Xác nhận mật khẩu:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" required>
 
                 <button type="submit">Đăng ký</button>
             </form>
             <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p>
         </main>
+        
+        <script src="../JS/main.js"></script>
+        <script src="../JS/register.js"></script>
     </body>
     </html>

@@ -28,10 +28,33 @@ class ProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     sizes = serializers.CharField(required=False)
     quantity = serializers.IntegerField(required=False)
+    has_purchased = serializers.SerializerMethodField(read_only=True)
+    has_history = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'brand', 'price', 'description', 'image', 'sizes', 'quantity', 'variants']
+        fields = ['id', 'name', 'brand', 'price', 'description', 'image', 'sizes', 'quantity', 'variants', 'has_purchased', 'has_history']
+
+    def get_has_purchased(self, obj):
+        request = self.context.get('request')
+        if request and request.user and request.user.is_authenticated:
+            # Kiểm tra xem người dùng có đơn hàng nào của sản phẩm này chưa được đánh giá không
+            return OrderItem.objects.filter(
+                order__user=request.user,
+                variant__product=obj,
+                review__isnull=True
+            ).exists()
+        return False
+
+    def get_has_history(self, obj):
+        request = self.context.get('request')
+        if request and request.user and request.user.is_authenticated:
+            # Kiểm tra xem người dùng đã từng mua sản phẩm này chưa (dù đã đánh giá hay chưa)
+            return OrderItem.objects.filter(
+                order__user=request.user,
+                variant__product=obj
+            ).exists()
+        return False
 
     def create(self, validated_data):
         sizes_str = validated_data.pop('sizes', '39,40,41,42,43,44,45')
