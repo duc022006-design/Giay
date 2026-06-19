@@ -1,0 +1,82 @@
+================================================================================
+TỔNG HỢP CÁC FILE ĐÃ TẠO VÀ CHỈNH SỬA - DỰ ÁN FRONTEND SHOE WEB & DJANGO BACKEND
+================================================================================
+
+Dưới đây là danh sách chi tiết các file mới được tạo thêm và các file đã chỉnh sửa 
+trong quá trình nâng cấp database sang mô hình biến thể (Size, Màu, Tồn kho) 
+và đồng bộ giỏ hàng theo từng tài khoản User.
+
+Bạn hãy sử dụng danh sách này để add và push lên Git.
+
+--------------------------------------------------------------------------------
+1. CÁC FILE TẠO MỚI (Thư mục ứng dụng 'store')
+--------------------------------------------------------------------------------
+Đường dẫn thư mục: Backend/store/
+
+* Backend/store/__init__.py
+  - File khai báo module Python.
+* Backend/store/apps.py
+  - Khai báo ứng dụng 'store'.
+* Backend/store/models.py
+  - Định nghĩa các bảng dữ liệu mới: Product (Sản phẩm), ProductVariant (Biến thể), 
+    CartItem (Giỏ hàng liên kết User), Order (Đơn hàng lưu trạng thái), 
+    OrderItem (Chi tiết đơn hàng), Review (Đánh giá).
+* Backend/store/serializers.py
+  - Chuyển đổi dữ liệu sang JSON. Tích hợp tương thích ngược để trả ra các trường 
+    sizes/quantity cũ cho frontend, tự động phân phối tồn kho khi admin cập nhật sản phẩm. 
+    Trả về đường dẫn tuyệt đối cho ảnh sản phẩm trong giỏ hàng.
+* Backend/store/views.py
+  - Code API xử lý đăng ký, danh sách sản phẩm, thêm/sửa/xóa giỏ hàng liên kết User, 
+    đặt hàng (có kiểm tra tồn kho biến thể thực tế), xem đơn hàng và gửi đánh giá.
+* Backend/store/urls.py
+  - Khai báo danh sách các đường dẫn API của store app.
+* Backend/store/admin.py
+  - Cấu hình hiển thị bảng admin nâng cao (quản lý biến thể ngay trong trang sản phẩm, 
+    xem chi tiết mặt hàng ngay trong trang đơn hàng).
+* Backend/store/migrations/0001_initial.py
+  - File migration khởi tạo cấu trúc bảng dữ liệu cho store app trong database sqlite.
+
+Lệnh add nhanh trên Git:
+git add Backend/store/
+
+--------------------------------------------------------------------------------
+2. CÁC FILE BACKEND ĐÃ CHỈNH SỬA (Modified)
+--------------------------------------------------------------------------------
+* Backend/requirements.txt
+  - Sửa lỗi phiên bản Django (6.0.3 -> 5.0.3) và thêm thư viện Pillow xử lý hình ảnh sản phẩm.
+* Backend/tuananhstore/settings.py
+  - Loại bỏ app cũ 'cart' khỏi INSTALLED_APPS và khai báo app mới 'store'.
+* Backend/tuananhstore/urls.py
+  - Cập nhật định tuyến sang store.urls thay vì cart.urls, đồng thời giữ đường dẫn 
+    checkout/ ở root level cho tương thích với Frontend.
+
+Lệnh add nhanh trên Git:
+git add Backend/requirements.txt Backend/tuananhstore/settings.py Backend/tuananhstore/urls.py
+
+--------------------------------------------------------------------------------
+3. CÁC FILE FRONTEND (JAVASCRIPT) ĐÃ CHỈNH SỬA (Modified)
+--------------------------------------------------------------------------------
+Đường dẫn thư mục chứa code JS: JS/
+
+* JS/main.js
+  - Sửa hàm đăng xuất (logout): Thêm lệnh xóa sạch giỏ hàng trong localStorage khi đăng xuất 
+    để tránh rò rỉ dữ liệu sang tài khoản đăng nhập sau.
+* JS/login.js
+  - Sửa hàm đăng nhập (handleLogin): Thêm logic tự động gọi API lấy giỏ hàng của tài khoản 
+    từ Backend lưu vào localStorage ngay sau khi đăng nhập thành công.
+* JS/product-detail.js
+  - Sửa hàm thêm vào giỏ (addProductToCart): Tự động gọi API đồng bộ ngay lập tức 
+    món hàng vừa thêm lên Database nếu người dùng đã đăng nhập.
+* JS/cart.js
+  - Sửa hàm cập nhật số lượng (updateQuantity) và xóa sản phẩm (removeFromCart): 
+    Thêm hàm tự động đồng bộ thay đổi giỏ hàng lên Database Backend mỗi khi người dùng 
+    chỉnh sửa số lượng hoặc xóa giày ở giao diện giỏ hàng.
+
+Lệnh add nhanh trên Git:
+git add JS/main.js JS/login.js JS/product-detail.js JS/cart.js
+
+--------------------------------------------------------------------------------
+LƯU Ý KHI PUSH GIT:
+- Bạn nên thêm file 'db.sqlite3' lên Git nếu muốn giữ nguyên dữ liệu 9 sản phẩm đã tạo sẵn.
+- KHÔNG add thư mục 'venv' (môi trường ảo) và các thư mục '__pycache__' lên Git.
+================================================================================
