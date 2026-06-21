@@ -1,0 +1,62 @@
+================================================================================
+TỔNG HỢP CÁC FILE ĐÃ THÊM / BỚT / SỬA Ở PHẦN ĐÁNH GIÁ (REVIEW SYSTEM)
+================================================================================
+
+Nhánh: review
+Mục tiêu: Triển khai tính năng Đánh giá & Bình luận sản phẩm (1-5 sao) tích hợp logic kiểm tra chỉ cho phép khách hàng đã mua sản phẩm đánh giá, đồng thời giới hạn số lượt đánh giá bằng đúng số lần mua thực tế (One review per OrderItem).
+
+Dưới đây là chi tiết các file đã tạo mới và chỉnh sửa thuộc tính năng này:
+
+--------------------------------------------------------------------------------
+1. CÁC TẬP TIN BACKEND ĐÃ CHỈNH SỬA & TẠO MỚI (Django REST Framework)
+--------------------------------------------------------------------------------
+
+* Backend/store/models.py (SỬA)
+  - Nội dung sửa: Thêm liên kết 1-đối-1 (OneToOneField) từ bảng `Review` tới bảng `OrderItem`.
+    + Khai báo thêm trường:
+      `order_item = models.OneToOneField(OrderItem, on_delete=models.SET_NULL, null=True, blank=True, related_name='review')`
+  - Lý do: Ràng buộc mỗi chi tiết mua hàng (OrderItem) của người dùng chỉ được viết tối đa 1 đánh giá, tương ứng với quy tắc "mua bao nhiêu lần thì đánh giá bấy nhiêu lần".
+
+* Backend/store/serializers.py (SỬA)
+  - Nội dung sửa:
+    + Thêm 2 trường động vào `ProductSerializer`: `has_purchased` (SerializerMethodField) và `has_history` (SerializerMethodField).
+    + Logic `has_purchased`: Kiểm tra xem người dùng hiện tại có đơn hàng nào của sản phẩm này chứa `OrderItem` chưa được đánh giá hay không (review__isnull=True).
+    + Logic `has_history`: Kiểm tra xem người dùng đã từng mua sản phẩm này chưa (bất kể đã đánh giá hay chưa).
+  - Lý do: Cung cấp thông tin trạng thái mua hàng để Frontend ẩn/hiển thị form đánh giá và đưa ra các cảnh báo phù hợp.
+
+* Backend/store/views.py (SỬA)
+  - Nội dung sửa: Cập nhật hàm `perform_create` trong API `ReviewListCreateAPIView`.
+    + Khi người dùng gửi đánh giá, API sẽ tìm kiếm xem người dùng có `OrderItem` nào của sản phẩm này chưa được liên kết với đánh giá nào (`review__isnull=True`).
+    + Nếu có: Liên kết đánh giá mới này với `OrderItem` đó.
+    + Nếu không: Trả về lỗi Validation Error "Bạn không có lượt đánh giá nào còn trống cho sản phẩm này."
+  - Lý do: Thực thi quy tắc giới hạn lượt đánh giá trực tiếp ở tầng dữ liệu Backend.
+
+* Backend/store/migrations/0002_review_order_item.py (TẠO MỚI)
+  - Nội dung: File migration được tự động sinh ra để cập nhật cột `order_item_id` vào bảng `store_review` trong cơ sở dữ liệu SQLite.
+
+--------------------------------------------------------------------------------
+2. CÁC TẬP TIN FRONTEND ĐÃ CHỈNH SỬA & TẠO MỚI (HTML/CSS/JS)
+--------------------------------------------------------------------------------
+
+* HTML/product-detail.html (TẠO MỚI/CẬP NHẬT)
+  - Nội dung sửa: Thêm khung chứa layout đánh giá dạng lưới:
+    `<section id="reviews-container" class="reviews-section"></section>`
+  - Lý do: Tạo khu vực hiển thị bình luận và form đánh giá ở bên dưới chi tiết sản phẩm.
+
+* CSS/product-detail.css (TẠO MỚI)
+  - Nội dung: Thiết kế giao diện cho phần Đánh giá & Bình luận bao gồm:
+    + Sidebar tóm tắt điểm đánh giá trung bình và thống kê sao (vàng/xám).
+    + Khung bình luận (review-card) hiển thị tên người mua, avatar chữ cái đầu, huy hiệu "Đã mua hàng" (buyer-verified-badge) và ngày giờ viết.
+    + Form nhập bình luận và các ngôi sao tương tác (1-5 sao).
+    + Các thông báo/cảnh báo lỗi dạng Glassmorphism đẹp mắt.
+
+* JS/product-detail.js (SỬA)
+  - Nội dung sửa:
+    + Thêm các hàm `loadProductReviews(productId)` và `renderReviewsSection(reviews, productId)` để lấy và hiển thị danh sách đánh giá từ API.
+    + Tích hợp logic phân nhánh thông báo và form dựa trên dữ liệu sản phẩm:
+      + Nếu chưa đăng nhập: Hiển thị liên kết đăng nhập.
+      + Nếu đã đăng nhập nhưng `has_purchased` và `has_history` đều là `false` (chưa từng mua): Hiển thị cảnh báo "Bạn chỉ có thể gửi đánh giá sau khi đã mua đôi giày này thành công."
+      + Nếu đã đăng nhập nhưng `has_purchased` là `false` và `has_history` là `true` (đã mua nhưng đã đánh giá hết lượt): Hiển thị thông báo "Bạn đã đánh giá sản phẩm này từ các lần mua trước. Hãy mua thêm để tiếp tục đánh giá!"
+      + Nếu có quyền đánh giá: Hiển thị form chọn sao (1-5 sao) và khu vực nhập chữ, đồng thời xử lý hàm gửi bình luận `submitUserReview()`.
+    + Khi người dùng gửi đánh giá thành công, gọi lại hàm `loadProductDetail(productId)` để tự động tải lại trạng thái mua hàng và cập nhật cảnh báo (ví dụ: khóa form ngay lập tức nếu hết lượt đánh giá).
+================================================================================
