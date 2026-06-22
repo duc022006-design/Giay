@@ -204,3 +204,9 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
             raise ValidationError("Bạn không có lượt đánh giá nào còn trống cho sản phẩm này. Hãy mua thêm để tiếp tục đánh giá!")
             
         serializer.save(user=self.request.user, order_item=unreviewed_item)
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import MyTokenObtainPairSerializer
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

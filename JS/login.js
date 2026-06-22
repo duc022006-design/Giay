@@ -44,8 +44,8 @@ async function handleLogin(event) {
             
             alert("Đăng nhập thành công!");
             
-            // Nếu là admin thì chuyển hướng vào trang quản trị
-            if (username === 'admin') {
+            // Nếu là admin/staff thì chuyển hướng vào trang quản trị
+            if (data.is_staff || data.is_superuser) {
                 window.location.href = 'Owner/dashboard.html';
             } else {
                 window.location.href = 'index.html'; // Trở về trang chủ
