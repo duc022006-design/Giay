@@ -154,7 +154,7 @@ function addToCart(id, name, price, image) {
     }
 
     let existingItem = cart.find(item => item.id === id && String(item.size) === "40");
-    let currentInCart = existingItem ? existingItem.quantity : 0;
+    let currentInCart = existingItem ? (parseInt(existingItem.quantity) || 0) : 0;
 
     if (currentInCart + 1 > stock) {
         alert(`Không thể thêm. Số lượng trong giỏ hàng đã đạt giới hạn tồn kho cho Size 40 (Còn lại: ${stock} sản phẩm).`);
@@ -162,7 +162,7 @@ function addToCart(id, name, price, image) {
     }
     
     if (existingItem) {
-        existingItem.quantity += 1; // Tăng số lượng
+        existingItem.quantity = (parseInt(existingItem.quantity) || 0) + 1; // Tăng số lượng
     } else {
         cart.push({ 
             id, 

@@ -274,17 +274,18 @@ function addProductToCart() {
     
     // Tìm sản phẩm cùng ID và cùng Size trong giỏ
     let existingItem = cart.find(item => item.id === currentProduct.id && String(item.size) === String(selectedSize));
-    let currentInCart = existingItem ? existingItem.quantity : 0;
+    let currentInCart = existingItem ? (parseInt(existingItem.quantity) || 0) : 0;
+    let addedQty = parseInt(detailQuantity) || 1;
 
-    if (currentInCart + detailQuantity > stock) {
-        alert(`Không thể thêm. Tổng số lượng trong giỏ hàng (${currentInCart + detailQuantity}) vượt quá số lượng tồn kho cho Size ${selectedSize} (Còn lại: ${stock} sản phẩm).`);
+    if (currentInCart + addedQty > stock) {
+        alert(`Không thể thêm. Tổng số lượng trong giỏ hàng (${currentInCart + addedQty}) vượt quá số lượng tồn kho cho Size ${selectedSize} (Còn lại: ${stock} sản phẩm).`);
         return;
     }
 
     const imageUrl = currentProduct.image ? currentProduct.image : '../images/giay-da-bong.jpg';
 
     if (existingItem) {
-        existingItem.quantity += detailQuantity;
+        existingItem.quantity = (parseInt(existingItem.quantity) || 0) + addedQty;
     } else {
         cart.push({
             id: currentProduct.id,
@@ -292,7 +293,7 @@ function addProductToCart() {
             price: currentProduct.price,
             image: imageUrl,
             size: selectedSize,
-            quantity: detailQuantity
+            quantity: addedQty
         });
     }
 
