@@ -153,9 +153,9 @@ function renderProductDetail(product) {
             <div class="quantity-section" style="display: flex; align-items: center; gap: 15px; margin-top: 10px; margin-bottom: 5px;">
                 <span style="font-weight: 600; font-size: 15px; color: #333;">Số lượng:</span>
                 <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <button onclick="changeDetailQuantity(-1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; font-size: 16px; font-weight: bold; color: #666; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">-</button>
+                    <button onclick="changeDetailQuantity(-1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'"><i class='bx bx-minus' style="font-size: 16px; color: #666;"></i></button>
                     <span id="detail-quantity" style="padding: 0 10px; font-weight: 600; min-width: 30px; text-align: center; font-size: 15px; color: #111;">1</span>
-                    <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; font-size: 16px; font-weight: bold; color: #666; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">+</button>
+                    <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'"><i class='bx bx-plus' style="font-size: 16px; color: #666;"></i></button>
                 </div>
                 <span id="selected-size-stock-label" style="font-size: 13px; color: #888;">(Còn lại: ${product.quantity || 0} sản phẩm)</span>
             </div>
@@ -221,8 +221,12 @@ function selectSize(size, element) {
 }
 
 function changeDetailQuantity(amount) {
-    detailQuantity += amount;
-    if (detailQuantity < 1) detailQuantity = 1;
+    const qtyElement = document.getElementById('detail-quantity');
+    if (!qtyElement) return;
+
+    let currentQty = parseInt(qtyElement.innerText) || 1;
+    currentQty += amount;
+    if (currentQty < 1) currentQty = 1;
     
     let stock = 0;
     if (currentProduct) {
@@ -237,15 +241,13 @@ function changeDetailQuantity(amount) {
     }
     
     // Giới hạn số lượng mua theo tồn kho tối đa của size đã chọn
-    if (detailQuantity > stock) {
-        detailQuantity = stock > 0 ? stock : 1;
+    if (currentQty > stock) {
+        currentQty = stock > 0 ? stock : 1;
         alert(`Số lượng tồn kho cho Size ${selectedSize} chỉ còn tối đa ${stock} sản phẩm!`);
     }
     
-    const qtyElement = document.getElementById('detail-quantity');
-    if (qtyElement) {
-        qtyElement.innerText = detailQuantity;
-    }
+    detailQuantity = currentQty;
+    qtyElement.innerText = detailQuantity;
 }
 
 function addProductToCart() {
@@ -311,12 +313,12 @@ function addProductToCart() {
             body: JSON.stringify({
                 product_id: currentProduct.id,
                 size: selectedSize,
-                quantity: detailQuantity
+                quantity: addedQty
             })
         }).catch(err => console.error("Lỗi đồng bộ giỏ hàng lên backend:", err));
     }
 
-    alert(`Đã thêm ${detailQuantity} sản phẩm "${currentProduct.name}" (Size: ${selectedSize}) vào giỏ hàng thành công!`);
+    alert(`Đã thêm ${addedQty} sản phẩm "${currentProduct.name}" (Size: ${selectedSize}) vào giỏ hàng thành công!`);
 
     // Reset lại số lượng về 1 sau khi thêm thành công
     detailQuantity = 1;
