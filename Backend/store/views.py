@@ -83,6 +83,13 @@ def add_to_cart_api(request):
             # Fallback: tạo biến thể mặc định nếu chưa được khởi tạo
             variant = ProductVariant.objects.create(product=product, size=size, color=color, stock=10)
             
+        cart_item = CartItem.objects.filter(user=request.user, variant=variant).first()
+        current_qty = cart_item.quantity if cart_item else 0
+        if current_qty + quantity > variant.stock:
+            return Response({
+                'error': f'Không thể thêm. Số lượng trong giỏ hàng vượt quá tồn kho của Size {size} (Còn lại: {variant.stock} sản phẩm).'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
         cart_item, created = CartItem.objects.get_or_create(
             user=request.user,
             variant=variant,
@@ -124,6 +131,10 @@ def add_multiple_to_cart_api(request):
             if not variant:
                 variant = ProductVariant.objects.create(product=product, size=size, color=color, stock=10)
                 
+            # Giới hạn số lượng đồng bộ không được vượt quá số lượng tồn kho
+            if quantity > variant.stock:
+                quantity = variant.stock
+
             cart_item, created = CartItem.objects.get_or_create(
                 user=request.user,
                 variant=variant,

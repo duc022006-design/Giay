@@ -270,16 +270,17 @@ function addProductToCart() {
         return;
     }
 
-    if (detailQuantity > stock) {
-        alert(`Số lượng tồn kho cho Size ${selectedSize} chỉ còn tối đa ${stock} sản phẩm!`);
-        return;
-    }
-
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
     // Tìm sản phẩm cùng ID và cùng Size trong giỏ
     let existingItem = cart.find(item => item.id === currentProduct.id && String(item.size) === String(selectedSize));
-    
+    let currentInCart = existingItem ? existingItem.quantity : 0;
+
+    if (currentInCart + detailQuantity > stock) {
+        alert(`Không thể thêm. Tổng số lượng trong giỏ hàng (${currentInCart + detailQuantity}) vượt quá số lượng tồn kho cho Size ${selectedSize} (Còn lại: ${stock} sản phẩm).`);
+        return;
+    }
+
     const imageUrl = currentProduct.image ? currentProduct.image : '../images/giay-da-bong.jpg';
 
     if (existingItem) {

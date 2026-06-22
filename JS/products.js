@@ -141,8 +141,26 @@ function addToCart(id, name, price, image) {
     // Lấy giỏ hàng hiện tại, nếu chưa có thì tạo mảng rỗng
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    // Kiểm tra xem giày đã có trong giỏ chưa
-    let existingItem = cart.find(item => item.id === id);
+    // Tìm sản phẩm trong danh sách đã tải
+    const product = allProducts.find(p => p.id === id);
+    let stock = 0;
+    if (product) {
+        if (product.variants && product.variants.length > 0) {
+            const variant = product.variants.find(v => String(v.size) === "40");
+            stock = variant ? variant.stock : 0;
+        } else {
+            stock = product.quantity || 0;
+        }
+    }
+
+    let existingItem = cart.find(item => item.id === id && String(item.size) === "40");
+    let currentInCart = existingItem ? existingItem.quantity : 0;
+
+    if (currentInCart + 1 > stock) {
+        alert(`Không thể thêm. Số lượng trong giỏ hàng đã đạt giới hạn tồn kho cho Size 40 (Còn lại: ${stock} sản phẩm).`);
+        return;
+    }
+    
     if (existingItem) {
         existingItem.quantity += 1; // Tăng số lượng
     } else {
@@ -157,7 +175,24 @@ function addToCart(id, name, price, image) {
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));
-    alert(`Đã thêm "${name}" vào giỏ hàng!`);
+    alert(`Đã thêm "${name}" (Size 40) vào giỏ hàng!`);
+
+    // Đồng bộ ngay lập tức lên cơ sở dữ liệu nếu đã đăng nhập
+    if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+        const token = localStorage.getItem('token');
+        fetch(`${API_BASE_URL}/add-to-cart/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                product_id: id,
+                size: 40,
+                quantity: 1
+            })
+        }).catch(err => console.error("Lỗi đồng bộ giỏ hàng lên backend:", err));
+    }
 }
 
 /**

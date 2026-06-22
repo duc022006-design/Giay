@@ -51,11 +51,42 @@ function renderCart() {
 /**
  * Hàm cập nhật số lượng sản phẩm
  */
-function updateQuantity(index, newQuantity) {
+async function updateQuantity(index, newQuantity) {
     let cart = JSON.parse(localStorage.getItem('cart'));
     if(!cart || !cart[index]) return;
     
-    cart[index].quantity = parseInt(newQuantity);
+    const item = cart[index];
+    const qty = parseInt(newQuantity);
+    
+    if (isNaN(qty) || qty < 1) {
+        alert("Số lượng phải lớn hơn hoặc bằng 1.");
+        renderCart();
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/products/${item.id}/`);
+        if (response.ok) {
+            const product = await response.json();
+            let stock = 0;
+            if (product.variants && product.variants.length > 0) {
+                const variant = product.variants.find(v => String(v.size) === String(item.size || 40));
+                stock = variant ? variant.stock : 0;
+            } else {
+                stock = product.quantity || 0;
+            }
+
+            if (qty > stock) {
+                alert(`Không thể thay đổi. Số lượng yêu cầu (${qty}) vượt quá số lượng tồn kho cho Size ${item.size || 40} (Còn lại: ${stock} sản phẩm).`);
+                renderCart(); // Reset lại hiển thị số lượng cũ
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("Lỗi kiểm tra tồn kho khi cập nhật số lượng:", err);
+    }
+    
+    cart[index].quantity = qty;
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart(); // Vẽ lại giỏ hàng
     syncCartToBackend(); // Đồng bộ sang DB
