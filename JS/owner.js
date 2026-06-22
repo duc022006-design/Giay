@@ -140,7 +140,11 @@ async function deleteProduct(productId) {
                 window.location.href = '../login.html';
                 return;
             }
-            alert("Lỗi khi xóa! Bạn có phải là Admin?");
+            if (errData && errData.detail) {
+                alert("Lỗi khi xóa: " + errData.detail);
+            } else {
+                alert("Lỗi khi xóa! Vui lòng kiểm tra lại quyền Admin của bạn.");
+            }
         }
     } catch (error) {
         console.error("Lỗi khi xóa:", error);

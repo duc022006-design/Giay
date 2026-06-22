@@ -20,16 +20,38 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+
+class IsAdminOrReadOnly(BasePermission):
+    """
+    Chỉ cho phép tài khoản Admin (is_staff=True) thêm, sửa, xóa sản phẩm.
+    Cho phép xem sản phẩm (GET) đối với mọi đối tượng.
+    """
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.is_authenticated and request.user.is_staff)
+
 # === API SẢN PHẨM ===
 class ProductListAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all().order_by('id')
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
+
+    def destroy(self, request, *args, **kwargs):
+        from django.db.models import ProtectedError
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {"detail": "Không thể xóa sản phẩm này vì đã có đơn hàng liên kết với nó. Bạn chỉ có thể cập nhật số lượng tồn kho của sản phẩm về 0!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 # === API GIỎ HÀNG (THEO USER) ===
 class CartItemListAPIView(generics.ListAPIView):
