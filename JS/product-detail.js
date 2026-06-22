@@ -92,20 +92,38 @@ function renderProductDetail(product) {
     // Lấy danh sách kích cỡ từ product.sizes, nếu không có thì mặc định từ 39 đến 45
     const sizes = product.sizes ? product.sizes.split(',').map(s => s.trim()).filter(s => s !== '') : ["39", "40", "41", "42", "43", "44", "45"];
     
-    // Đặt mặc định kích cỡ được chọn ban đầu
+    // Đặt mặc định kích cỡ được chọn ban đầu (ưu tiên size còn hàng)
     if (sizes.length > 0) {
-        if (sizes.includes("40")) {
-            selectedSize = "40";
+        const availableSizes = sizes.filter(size => {
+            const variant = product.variants ? product.variants.find(v => String(v.size) === String(size)) : null;
+            return variant ? variant.stock > 0 : true;
+        });
+        
+        if (availableSizes.length > 0) {
+            if (availableSizes.includes("40")) {
+                selectedSize = "40";
+            } else {
+                selectedSize = availableSizes[0];
+            }
         } else {
-            selectedSize = sizes[0];
+            selectedSize = sizes.includes("40") ? "40" : sizes[0];
         }
     }
 
     // Tạo HTML cho danh sách kích cỡ dựa theo định dạng ở dashboard
     let sizeGridHTML = '';
     sizes.forEach(size => {
-        const isSelected = String(size) === String(selectedSize) ? 'selected' : '';
-        sizeGridHTML += `<button class="size-btn ${isSelected}" onclick="selectSize('${size.replace(/'/g, "\\'")}', this)">${size}</button>`;
+        const variant = product.variants ? product.variants.find(v => String(v.size) === String(size)) : null;
+        const stock = variant ? variant.stock : 0;
+        
+        let btnClass = 'size-btn';
+        if (product.variants && stock === 0) {
+            btnClass += ' disabled';
+        }
+        if (String(size) === String(selectedSize)) {
+            btnClass += ' selected';
+        }
+        sizeGridHTML += `<button class="${btnClass}" onclick="selectSize('${size.replace(/'/g, "\\'")}', this)">${size}</button>`;
     });
 
     const detailHTML = `
@@ -139,7 +157,7 @@ function renderProductDetail(product) {
                     <span id="detail-quantity" style="padding: 0 10px; font-weight: 600; min-width: 30px; text-align: center; font-size: 15px; color: #111;">1</span>
                     <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; font-size: 16px; font-weight: bold; color: #666; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">+</button>
                 </div>
-                <span style="font-size: 13px; color: #888;">(Còn lại: ${product.quantity || 0} sản phẩm)</span>
+                <span id="selected-size-stock-label" style="font-size: 13px; color: #888;">(Còn lại: ${product.quantity || 0} sản phẩm)</span>
             </div>
 
             <!-- Các nút hành động -->
@@ -160,25 +178,68 @@ function renderProductDetail(product) {
     `;
     
     detailContainer.innerHTML = detailHTML;
+    updateStockDisplayForSelectedSize();
+}
+
+function updateStockDisplayForSelectedSize() {
+    if (!currentProduct) return;
+    
+    let stock = 0;
+    if (currentProduct.variants && currentProduct.variants.length > 0) {
+        const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
+        if (variant) {
+            stock = variant.stock;
+        }
+    } else {
+        stock = currentProduct.quantity || 0;
+    }
+    
+    const stockLabel = document.getElementById('selected-size-stock-label');
+    if (stockLabel) {
+        stockLabel.innerText = `(Còn lại: ${stock} sản phẩm)`;
+    }
 }
 
 function selectSize(size, element) {
+    if (element.classList.contains('disabled')) return;
     selectedSize = size;
     // Bỏ chọn các nút khác
     const buttons = document.querySelectorAll('#size-grid .size-btn:not(.disabled)');
     buttons.forEach(btn => btn.classList.remove('selected'));
     // Chọn nút hiện tại
     element.classList.add('selected');
+    
+    // Cập nhật số lượng tồn kho hiển thị
+    updateStockDisplayForSelectedSize();
+    
+    // Reset lại số lượng chi tiết mua về 1
+    detailQuantity = 1;
+    const qtyElement = document.getElementById('detail-quantity');
+    if (qtyElement) {
+        qtyElement.innerText = detailQuantity;
+    }
 }
 
 function changeDetailQuantity(amount) {
     detailQuantity += amount;
     if (detailQuantity < 1) detailQuantity = 1;
     
-    // Giới hạn số lượng mua theo tồn kho tối đa của sản phẩm
-    if (currentProduct && currentProduct.quantity !== undefined && detailQuantity > currentProduct.quantity) {
-        detailQuantity = currentProduct.quantity;
-        alert(`Số lượng tồn kho chỉ còn tối đa ${currentProduct.quantity} sản phẩm!`);
+    let stock = 0;
+    if (currentProduct) {
+        if (currentProduct.variants && currentProduct.variants.length > 0) {
+            const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
+            if (variant) {
+                stock = variant.stock;
+            }
+        } else {
+            stock = currentProduct.quantity || 0;
+        }
+    }
+    
+    // Giới hạn số lượng mua theo tồn kho tối đa của size đã chọn
+    if (detailQuantity > stock) {
+        detailQuantity = stock > 0 ? stock : 1;
+        alert(`Số lượng tồn kho cho Size ${selectedSize} chỉ còn tối đa ${stock} sản phẩm!`);
     }
     
     const qtyElement = document.getElementById('detail-quantity');
@@ -191,6 +252,26 @@ function addProductToCart() {
     if (!currentProduct) return;
     if (!selectedSize) {
         alert("Vui lòng chọn kích cỡ giày của bạn!");
+        return;
+    }
+
+    let stock = 0;
+    if (currentProduct.variants && currentProduct.variants.length > 0) {
+        const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
+        if (variant) {
+            stock = variant.stock;
+        }
+    } else {
+        stock = currentProduct.quantity || 0;
+    }
+
+    if (stock <= 0) {
+        alert(`Kích cỡ ${selectedSize} hiện tại đã hết hàng! Vui lòng chọn size khác.`);
+        return;
+    }
+
+    if (detailQuantity > stock) {
+        alert(`Số lượng tồn kho cho Size ${selectedSize} chỉ còn tối đa ${stock} sản phẩm!`);
         return;
     }
 

@@ -1,6 +1,55 @@
 let editingProductId = null; // Biến lưu trạng thái đang sửa
 let cachedProducts = [];     // Cache danh sách sản phẩm phục vụ thống kê & tìm kiếm
 let cachedOrders = [];       // Cache danh sách đơn hàng phục vụ thống kê & tìm kiếm
+let currentSizeQuantities = {}; // Lưu trữ số lượng theo từng size dạng: {39: 10, 40: 10, ...}
+
+function renderSizeStocksContainer() {
+    const sizesInput = document.getElementById('productSizes');
+    if (!sizesInput) return;
+    
+    const sizesStr = sizesInput.value;
+    const sizes = sizesStr.split(',')
+        .map(s => s.trim())
+        .filter(s => s !== '' && !isNaN(s))
+        .map(Number);
+        
+    const container = document.getElementById('sizeStocksContainer');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const newSizeQuantities = {};
+    
+    sizes.forEach(size => {
+        const qty = currentSizeQuantities[size] !== undefined ? currentSizeQuantities[size] : 10;
+        newSizeQuantities[size] = qty;
+        
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'size-stock-item';
+        itemDiv.innerHTML = `
+            <label>Size ${size}</label>
+            <input type="number" class="size-qty-input" data-size="${size}" value="${qty}" min="0" required oninput="handleSizeQtyChange(this)">
+        `;
+        container.appendChild(itemDiv);
+    });
+    
+    currentSizeQuantities = newSizeQuantities;
+    updateTotalQuantity();
+}
+
+function handleSizeQtyChange(input) {
+    const size = Number(input.dataset.size);
+    const val = parseInt(input.value) || 0;
+    currentSizeQuantities[size] = val;
+    updateTotalQuantity();
+}
+
+function updateTotalQuantity() {
+    const total = Object.values(currentSizeQuantities).reduce((sum, qty) => sum + qty, 0);
+    const qtyInput = document.getElementById('productQuantity');
+    if (qtyInput) {
+        qtyInput.value = total;
+    }
+}
 
 async function loadProducts() {
     try {
@@ -79,6 +128,7 @@ async function addOrUpdateProduct(event) {
     formData.append('price', price);
     formData.append('quantity', quantity);
     formData.append('sizes', sizes);
+    formData.append('size_stocks', JSON.stringify(currentSizeQuantities));
     formData.append('description', desc);
     
     // Chỉ đính kèm file nếu người dùng có chọn file mới
@@ -161,9 +211,22 @@ async function editProduct(productId) {
             document.getElementById('productName').value = p.name;
             document.getElementById('productPrice').value = p.price;
             document.getElementById('shoe-brand').value = p.brand || 'Khác';
-            document.getElementById('productQuantity').value = p.quantity;
             document.getElementById('productSizes').value = p.sizes || '39,40,41,42,43,44,45';
             document.getElementById('shoe-desc').value = p.description || '';
+            
+            // Đổ số lượng theo từng size
+            currentSizeQuantities = {};
+            if (p.variants && p.variants.length > 0) {
+                p.variants.forEach(v => {
+                    currentSizeQuantities[v.size] = v.stock;
+                });
+            } else {
+                const defaultSizes = (p.sizes || '39,40,41,42,43,44,45').split(',').map(s => Number(s.trim()));
+                defaultSizes.forEach(sz => {
+                    currentSizeQuantities[sz] = 0;
+                });
+            }
+            renderSizeStocksContainer();
             
             // Bỏ require cho thẻ input file khi đang edit (nếu không chọn file mới thì giữ nguyên file cũ)
             document.getElementById('productImageFile').required = false;
@@ -195,12 +258,24 @@ function resetForm() {
     
     const formHeader = document.querySelector('.add-product-card h2');
     if(formHeader) formHeader.innerHTML = `<i class='bx bx-plus-circle'></i> Thêm Sản Phẩm Mới`;
+
+    // Reset số lượng chi tiết về mặc định
+    currentSizeQuantities = {};
+    renderSizeStocksContainer();
 }
 
 // Chạy hàm load khi DOM sẵn sàng
 document.addEventListener("DOMContentLoaded", () => {
     // Tải dữ liệu mặc định cho phần Tổng Quan
     loadOverviewStats();
+    
+    // Lắng nghe sự kiện thay đổi của ô kích cỡ để cập nhật danh sách nhập số lượng
+    const sizesInput = document.getElementById('productSizes');
+    if (sizesInput) {
+        sizesInput.addEventListener('input', renderSizeStocksContainer);
+        // Khởi tạo các ô nhập số lượng ban đầu khi tải trang
+        renderSizeStocksContainer();
+    }
 });
 
 // Chuyển đổi qua lại giữa các section trong dashboard

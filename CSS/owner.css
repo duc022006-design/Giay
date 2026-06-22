@@ -539,3 +539,39 @@ body {
     font-size: 14px;
     border: 1px solid var(--border-color);
 }
+
+/* Size Stock Grid in Admin Form */
+.size-stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.size-stock-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.size-stock-item label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0 !important;
+}
+
+.size-stock-item input {
+    width: 100%;
+    text-align: center;
+    padding: 8px !important;
+    font-size: 13px !important;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #ffffff !important;
+}
