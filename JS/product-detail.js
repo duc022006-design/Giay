@@ -152,16 +152,16 @@ function renderProductDetail(product) {
             <!-- Chọn Số Lượng -->
             <div class="quantity-section" style="display: flex; align-items: center; gap: 15px; margin-top: 10px; margin-bottom: 5px;">
                 <span style="font-weight: 600; font-size: 15px; color: #333;">Số lượng:</span>
-                <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <button onclick="changeDetailQuantity(-1)" style="border: none; background: none; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <div id="qty-pill" style="display: inline-flex; align-items: center; border: 1.5px solid #ddd; border-radius: 24px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; padding: 2px 4px;">
+                    <button id="qty-minus-btn" onclick="changeDetailQuantity(-1)" style="border: none; background: transparent; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; outline: none; flex-shrink: 0;" onmouseover="if(!this.disabled)this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
-                    <span id="detail-quantity" style="padding: 0 10px; font-weight: 600; min-width: 30px; text-align: center; font-size: 15px; color: #111; display: flex; align-items: center; justify-content: center;">1</span>
-                    <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span id="detail-quantity" style="min-width: 32px; text-align: center; font-weight: 700; font-size: 15px; color: #111; user-select: none;">1</span>
+                    <button id="qty-plus-btn" onclick="changeDetailQuantity(1)" style="border: none; background: transparent; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; outline: none; flex-shrink: 0;" onmouseover="if(!this.disabled)this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
                 </div>
-                <span id="selected-size-stock-label" style="font-size: 13px; color: #888;">(Còn lại: ${product.quantity || 0} sản phẩm)</span>
+                <span id="selected-size-stock-label" style="font-size: 13px; color: #888;">(Còn lại: 0 sản phẩm)</span>
             </div>
 
             <!-- Các nút hành động -->
@@ -192,16 +192,33 @@ function updateStockDisplayForSelectedSize() {
     if (currentProduct.variants && currentProduct.variants.length > 0) {
         const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
         if (variant) {
-            stock = variant.stock;
+            stock = parseInt(variant.stock) || 0;
         }
     } else {
-        stock = currentProduct.quantity || 0;
+        stock = parseInt(currentProduct.quantity) || 0;
     }
     
     const stockLabel = document.getElementById('selected-size-stock-label');
     if (stockLabel) {
-        stockLabel.innerText = `(Còn lại: ${stock} sản phẩm)`;
+        if (stock <= 0) {
+            stockLabel.innerText = `(Hết hàng)`;
+            stockLabel.style.color = '#e74c3c';
+        } else {
+            stockLabel.innerText = `(Còn lại: ${stock} sản phẩm)`;
+            stockLabel.style.color = '#888';
+        }
     }
+
+    // Disable/enable the +/- buttons based on stock
+    const qtyPlusBtn = document.getElementById('qty-plus-btn');
+    const qtyMinusBtn = document.getElementById('qty-minus-btn');
+    const disableButtons = stock <= 0;
+    [qtyPlusBtn, qtyMinusBtn].forEach(btn => {
+        if (!btn) return;
+        btn.disabled = disableButtons;
+        btn.style.opacity = disableButtons ? '0.35' : '1';
+        btn.style.cursor = disableButtons ? 'not-allowed' : 'pointer';
+    });
 }
 
 function selectSize(size, element) {
@@ -228,25 +245,30 @@ function changeDetailQuantity(amount) {
     const qtyElement = document.getElementById('detail-quantity');
     if (!qtyElement) return;
 
-    let currentQty = parseInt(qtyElement.innerText) || 1;
-    currentQty += amount;
-    if (currentQty < 1) currentQty = 1;
-    
     let stock = 0;
     if (currentProduct) {
         if (currentProduct.variants && currentProduct.variants.length > 0) {
             const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
             if (variant) {
-                stock = variant.stock;
+                stock = parseInt(variant.stock) || 0;
             }
         } else {
-            stock = currentProduct.quantity || 0;
+            stock = parseInt(currentProduct.quantity) || 0;
         }
     }
-    
-    // Giới hạn số lượng mua theo tồn kho tối đa của size đã chọn
+
+    // Nếu size này hết hàng thì không cho thay đổi
+    if (stock <= 0) return;
+
+    let currentQty = parseInt(qtyElement.innerText) || 1;
+    currentQty += amount;
+
+    // Không cho nhỏ hơn 1
+    if (currentQty < 1) currentQty = 1;
+
+    // Không cho vượt quá tồn kho
     if (currentQty > stock) {
-        currentQty = stock > 0 ? stock : 1;
+        currentQty = stock;
         alert(`Số lượng tồn kho cho Size ${selectedSize} chỉ còn tối đa ${stock} sản phẩm!`);
     }
     
@@ -265,10 +287,10 @@ function addProductToCart() {
     if (currentProduct.variants && currentProduct.variants.length > 0) {
         const variant = currentProduct.variants.find(v => String(v.size) === String(selectedSize));
         if (variant) {
-            stock = variant.stock;
+            stock = parseInt(variant.stock) || 0;
         }
     } else {
-        stock = currentProduct.quantity || 0;
+        stock = parseInt(currentProduct.quantity) || 0;
     }
 
     if (stock <= 0) {
