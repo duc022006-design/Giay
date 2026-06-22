@@ -1,8 +1,6 @@
-# tuananhstore/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
-# Import các view của Simple JWT
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -24,7 +22,6 @@ urlpatterns = [
     # API Checkout ở root level phục vụ cho frontend cũ
     path('checkout/', checkout, name='checkout'),
 
-    # Các API khác của store app
     path('', include('store.urls')),
 ]
 

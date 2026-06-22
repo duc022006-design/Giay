@@ -73,7 +73,6 @@ def add_to_cart_api(request):
         
         product = get_object_or_404(Product, id=product_id)
         
-        # Tìm biến thể phù hợp
         variant_qs = ProductVariant.objects.filter(product=product, size=size)
         if color:
             variant_qs = variant_qs.filter(color=color)
@@ -184,11 +183,10 @@ def checkout(request):
             
     total_price = sum(item.get_total_price() for item in cart_items)
     
-    # Tạo Đơn hàng
     order = Order.objects.create(
         user=request.user,
         total_price=total_price,
-        status=1 # Chờ xác nhận
+        status=1
     )
     
     # Tạo chi tiết đơn hàng và trừ kho
@@ -202,7 +200,6 @@ def checkout(request):
         item.variant.stock -= item.quantity
         item.variant.save()
         
-    # Xóa giỏ hàng
     cart_items.delete()
     
     return Response({'message': 'Đặt hàng thành công!', 'order_id': order.id}, status=status.HTTP_201_CREATED)

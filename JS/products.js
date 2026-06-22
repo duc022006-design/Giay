@@ -37,7 +37,7 @@ const MOCK_PRODUCTS = [
     }
 ];
 
-let allProducts = []; // Lưu danh sách tất cả sản phẩm từ server/mock
+let allProducts = [];
 
 /**
  * Hàm lấy danh sách sản phẩm từ API và hiển thị
@@ -49,7 +49,6 @@ async function fetchProducts() {
         
         const products = await response.json();
         if (products.length === 0) {
-            console.log("API rỗng, hiển thị mock products.");
             allProducts = MOCK_PRODUCTS;
         } else {
             // Chuẩn hóa đường dẫn hình ảnh từ backend
@@ -64,7 +63,7 @@ async function fetchProducts() {
         console.error("Lỗi khi lấy danh sách sản phẩm từ API, sử dụng mock data:", error);
         allProducts = MOCK_PRODUCTS;
     }
-    applyFilters(); // Áp dụng bộ lọc ban đầu
+    applyFilters();
 }
 
 /**
@@ -77,12 +76,10 @@ function applyFilters() {
 
     let filtered = allProducts;
 
-    // 1. Lọc theo Hãng
     if (brandFilter) {
         filtered = filtered.filter(p => p.brand === brandFilter);
     }
 
-    // 2. Lọc theo Giá
     if (priceFilter) {
         if (priceFilter === 'under1') {
             filtered = filtered.filter(p => p.price < 1000000);
@@ -112,7 +109,7 @@ function renderProducts(products) {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
     
-    productContainer.innerHTML = ''; // Xóa dữ liệu cũ
+    productContainer.innerHTML = '';
     
     if (products.length === 0) {
         productContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #888; padding: 40px 0; font-size: 1.1rem;">Không tìm thấy sản phẩm nào khớp với bộ lọc!</p>';
@@ -138,10 +135,8 @@ function renderProducts(products) {
  * Hàm thêm một sản phẩm vào Giỏ Hàng (Lưu tạm trong localStorage)
  */
 function addToCart(id, name, price, image) {
-    // Lấy giỏ hàng hiện tại, nếu chưa có thì tạo mảng rỗng
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
-    // Tìm sản phẩm trong danh sách đã tải
     const product = allProducts.find(p => p.id === id);
     let stock = 0;
     if (product) {
@@ -162,7 +157,7 @@ function addToCart(id, name, price, image) {
     }
     
     if (existingItem) {
-        existingItem.quantity = (parseInt(existingItem.quantity) || 0) + 1; // Tăng số lượng
+        existingItem.quantity = (parseInt(existingItem.quantity) || 0) + 1;
     } else {
         cart.push({ 
             id, 
@@ -170,8 +165,8 @@ function addToCart(id, name, price, image) {
             price, 
             image: image || '../images/giay-da-bong.jpg', 
             quantity: 1, 
-            size: 40 // Mặc định size ban đầu
-        }); // Thêm mới
+            size: 40
+        });
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -206,11 +201,9 @@ function setupCustomSelects() {
         const optionsContainer = select.querySelector('.custom-options');
         const options = select.querySelectorAll('.custom-option');
         
-        // Bật/tắt dropdown khi nhấn vào trigger
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
             
-            // Đóng tất cả dropdown khác
             customSelects.forEach(otherSelect => {
                 if (otherSelect !== select) {
                     otherSelect.classList.remove('active');
@@ -220,30 +213,23 @@ function setupCustomSelects() {
             select.classList.toggle('active');
         });
         
-        // Xử lý khi chọn một option
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Bỏ class selected ở các option khác
                 options.forEach(opt => opt.classList.remove('selected'));
                 
-                // Thêm class selected vào option đã chọn
                 option.classList.add('selected');
                 
-                // Cập nhật text hiển thị trên trigger
                 trigger.querySelector('span').textContent = option.textContent;
                 
-                // Đóng dropdown
                 select.classList.remove('active');
                 
-                // Áp dụng bộ lọc mới
                 applyFilters();
             });
         });
     });
     
-    // Đóng dropdown khi click ra ngoài vùng bộ lọc
     document.addEventListener('click', () => {
         customSelects.forEach(select => {
             select.classList.remove('active');
@@ -251,11 +237,9 @@ function setupCustomSelects() {
     });
 }
 
-// Chạy hàm lấy sản phẩm khi mở trang
 document.addEventListener("DOMContentLoaded", () => {
-    // Chỉ gọi hàm fetchProducts nếu có thẻ chứa danh sách sản phẩm trên trang
     if (document.getElementById('product-list')) {
         fetchProducts();
-        setupCustomSelects(); // Khởi tạo các custom select dropdown
+        setupCustomSelects();
     }
 });

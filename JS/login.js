@@ -48,7 +48,7 @@ async function handleLogin(event) {
             if (data.is_staff || data.is_superuser) {
                 window.location.href = 'Owner/dashboard.html';
             } else {
-                window.location.href = 'index.html'; // Trở về trang chủ
+                window.location.href = 'index.html';
             }
         } else {
             alert("Sai tài khoản hoặc mật khẩu!");
@@ -59,5 +59,4 @@ async function handleLogin(event) {
     }
 }
 
-// Gắn sự kiện submit cho form đăng nhập, dùng ?. để tránh lỗi
 document.getElementById('loginForm')?.addEventListener('submit', handleLogin);

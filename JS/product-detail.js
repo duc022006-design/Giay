@@ -1,5 +1,3 @@
-// product-detail.js
-
 const MOCK_PRODUCTS = [
     {
         id: 101,
@@ -44,8 +42,8 @@ const MOCK_PRODUCTS = [
 ];
 
 let currentProduct = null;
-let selectedSize = "40"; // Mặc định chọn size 40
-let detailQuantity = 1; // Số lượng đặt mua mặc định
+let selectedSize = "40";
+let detailQuantity = 1;
 
 document.addEventListener("DOMContentLoaded", () => {
     // Lấy ID sản phẩm từ URL
@@ -110,7 +108,6 @@ function renderProductDetail(product) {
         }
     }
 
-    // Tạo HTML cho danh sách kích cỡ dựa theo định dạng ở dashboard
     let sizeGridHTML = '';
     sizes.forEach(size => {
         const variant = product.variants ? product.variants.find(v => String(v.size) === String(size)) : null;
@@ -224,16 +221,12 @@ function updateStockDisplayForSelectedSize() {
 function selectSize(size, element) {
     if (element.classList.contains('disabled')) return;
     selectedSize = size;
-    // Bỏ chọn các nút khác
     const buttons = document.querySelectorAll('#size-grid .size-btn:not(.disabled)');
     buttons.forEach(btn => btn.classList.remove('selected'));
-    // Chọn nút hiện tại
     element.classList.add('selected');
     
-    // Cập nhật số lượng tồn kho hiển thị
     updateStockDisplayForSelectedSize();
     
-    // Reset lại số lượng chi tiết mua về 1
     detailQuantity = 1;
     const qtyElement = document.getElementById('detail-quantity');
     if (qtyElement) {
@@ -263,7 +256,6 @@ function changeDetailQuantity(amount) {
     let currentQty = parseInt(qtyElement.innerText) || 1;
     currentQty += amount;
 
-    // Không cho nhỏ hơn 1
     if (currentQty < 1) currentQty = 1;
 
     // Không cho vượt quá tồn kho
@@ -346,7 +338,6 @@ function addProductToCart() {
 
     alert(`Đã thêm ${addedQty} sản phẩm "${currentProduct.name}" (Size: ${selectedSize}) vào giỏ hàng thành công!`);
 
-    // Reset lại số lượng về 1 sau khi thêm thành công
     detailQuantity = 1;
     const qtyElement = document.getElementById('detail-quantity');
     if (qtyElement) {
@@ -425,14 +416,12 @@ function renderReviewsSection(reviews, productId) {
         avgRating = (sum / totalReviews).toFixed(1);
     }
 
-    // Tạo HTML các ngôi sao trung bình
     let avgStarsHtml = '';
     const roundedAvg = Math.round(avgRating);
     for (let i = 1; i <= 5; i++) {
         avgStarsHtml += `<span style="color: ${i <= roundedAvg ? '#ffc107' : '#e0e0e0'}">★</span>`;
     }
 
-    // Danh sách các review
     let reviewsListHTML = '';
     if (totalReviews === 0) {
         reviewsListHTML = `<p style="text-align: center; color: #888; padding: 40px 0; grid-column: span 2; width: 100%;">Chưa có lượt đánh giá nào cho sản phẩm này. Hãy là người đầu tiên mua và đánh giá sản phẩm!</p>`;
@@ -499,7 +488,6 @@ function renderReviewsSection(reviews, productId) {
             `;
         }
     } else {
-        // Cho phép đánh giá
         formHTML = `
             <div class="review-form-card">
                 <h3>Viết đánh giá của bạn</h3>

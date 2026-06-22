@@ -1,4 +1,4 @@
-let editingProductId = null; // Biến lưu trạng thái đang sửa
+let editingProductId = null;
 let cachedProducts = [];     // Cache danh sách sản phẩm phục vụ thống kê & tìm kiếm
 let cachedOrders = [];       // Cache danh sách đơn hàng phục vụ thống kê & tìm kiếm
 let currentSizeQuantities = {}; // Lưu trữ số lượng theo từng size dạng: {39: 10, 40: 10, ...}
@@ -151,7 +151,7 @@ async function addOrUpdateProduct(event) {
         if (response.ok) {
             alert(editingProductId ? "Đã cập nhật thành công!" : "Đã thêm giày mới thành công!");
             resetForm();
-            loadProducts(); // Load lại bảng
+            loadProducts();
         } else {
             const errData = await response.json();
             if (response.status === 401 || (errData && errData.code === 'token_not_valid')) {
@@ -207,14 +207,12 @@ async function editProduct(productId) {
         if(response.ok) {
             const p = await response.json();
             
-            // Đổ dữ liệu lên form
             document.getElementById('productName').value = p.name;
             document.getElementById('productPrice').value = p.price;
             document.getElementById('shoe-brand').value = p.brand || 'Khác';
             document.getElementById('productSizes').value = p.sizes || '39,40,41,42,43,44,45';
             document.getElementById('shoe-desc').value = p.description || '';
             
-            // Đổ số lượng theo từng size
             currentSizeQuantities = {};
             if (p.variants && p.variants.length > 0) {
                 p.variants.forEach(v => {
@@ -231,16 +229,14 @@ async function editProduct(productId) {
             // Bỏ require cho thẻ input file khi đang edit (nếu không chọn file mới thì giữ nguyên file cũ)
             document.getElementById('productImageFile').required = false;
 
-            // Đổi text nút Submit và thẻ Tiêu đề form
             const formBtn = document.querySelector('#addProductForm button[type="submit"]');
             if(formBtn) formBtn.innerText = 'Cập nhật Sản Phẩm';
             
             const formHeader = document.querySelector('.add-product-card h2');
             if(formHeader) formHeader.innerHTML = `<i class='bx bx-edit-alt'></i> Đang Sửa: ${p.name}`;
 
-            editingProductId = productId; // Gắn cờ đang sửa
+            editingProductId = productId;
             
-            // Cuộn lên đầu trang chỗ form
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     } catch (error) {
@@ -259,43 +255,34 @@ function resetForm() {
     const formHeader = document.querySelector('.add-product-card h2');
     if(formHeader) formHeader.innerHTML = `<i class='bx bx-plus-circle'></i> Thêm Sản Phẩm Mới`;
 
-    // Reset số lượng chi tiết về mặc định
     currentSizeQuantities = {};
     renderSizeStocksContainer();
 }
 
-// Chạy hàm load khi DOM sẵn sàng
 document.addEventListener("DOMContentLoaded", () => {
-    // Tải dữ liệu mặc định cho phần Tổng Quan
     loadOverviewStats();
     
-    // Lắng nghe sự kiện thay đổi của ô kích cỡ để cập nhật danh sách nhập số lượng
     const sizesInput = document.getElementById('productSizes');
     if (sizesInput) {
         sizesInput.addEventListener('input', renderSizeStocksContainer);
-        // Khởi tạo các ô nhập số lượng ban đầu khi tải trang
         renderSizeStocksContainer();
     }
 });
 
 // Chuyển đổi qua lại giữa các section trong dashboard
 function switchSection(sectionId) {
-    // Reset thanh tìm kiếm khi chuyển trang
     const searchInput = document.getElementById('dashboard-search');
     if (searchInput) searchInput.value = '';
 
-    // Ẩn tất cả các phần nội dung
     document.querySelectorAll('.dashboard-section').forEach(sec => {
         sec.style.display = 'none';
     });
     
-    // Hiển thị phần nội dung được chọn
     const activeSection = document.getElementById(`${sectionId}-section`);
     if (activeSection) {
         activeSection.style.display = 'block';
     }
     
-    // Cập nhật trạng thái active trên sidebar
     document.querySelectorAll('#sidebar-menu li').forEach(li => {
         li.classList.remove('active');
         if (li.getAttribute('data-section') === sectionId) {
@@ -303,7 +290,6 @@ function switchSection(sectionId) {
         }
     });
     
-    // Tải dữ liệu tương ứng
     if (sectionId === 'overview') {
         loadOverviewStats();
     } else if (sectionId === 'products') {
@@ -316,13 +302,11 @@ function switchSection(sectionId) {
 // Tải thông tin thống kê chung & cập nhật Widgets
 async function loadOverviewStats() {
     try {
-        // Tải danh sách sản phẩm
         const prodRes = await fetch(`${API_BASE_URL}/products/`);
         if (prodRes.ok) {
             cachedProducts = await prodRes.json();
         }
         
-        // Tải danh sách đơn hàng
         const token = localStorage.getItem('token');
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
         const orderRes = await fetch(`${API_BASE_URL}/orders/`, { headers });
@@ -330,12 +314,10 @@ async function loadOverviewStats() {
             cachedOrders = await orderRes.json();
         }
         
-        // Tính toán số liệu thống kê
         const totalProducts = cachedProducts.length;
         const totalOrders = cachedOrders.length;
         const totalRevenue = cachedOrders.reduce((sum, o) => sum + parseFloat(o.total_price), 0);
         
-        // Cập nhật giao diện Widgets
         document.getElementById('stat-products').innerText = totalProducts;
         document.getElementById('stat-orders').innerText = totalOrders;
         document.getElementById('stat-revenue').innerText = formatCurrencyVND(totalRevenue);
@@ -489,7 +471,6 @@ function viewOrderDetails(orderId) {
     document.getElementById('order-detail-modal').classList.add('active');
 }
 
-// Đóng modal chi tiết đơn hàng
 function closeOrderModal() {
     document.getElementById('order-detail-modal').classList.remove('active');
 }
@@ -498,7 +479,6 @@ function closeOrderModal() {
 function handleSearch(query) {
     const q = query.toLowerCase().trim();
     
-    // Tìm kiếm phần section đang active
     const activeSection = document.querySelector('.dashboard-section[style*="display: block"]') || 
                           document.querySelector('.dashboard-section:not([style*="display: none"])');
     if (!activeSection) return;

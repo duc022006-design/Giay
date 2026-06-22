@@ -12,17 +12,32 @@ function formatCurrencyVND(amount) {
  * Hàm tải Header và Footer chung cho các trang
  */
 function loadComponents() {
-    // Tải Header
-    fetch("component/header.html") 
-        .then(response => response.text())
+    const headerElement = document.getElementById("header");
+
+    // Nếu header đã có nội dung inline (ví dụ dashboard.html), không cần fetch
+    if (headerElement && headerElement.innerHTML.trim() !== '') {
+        updateHeaderAuth();
+        return;
+    }
+
+    // Tự động chọn đường dẫn đúng theo độ sâu thư mục của trang hiện tại
+    const depth = window.location.pathname.split('/').filter(Boolean).length;
+    // HTML/Owner/ có depth >= 3 (FrontendShoeWeb--main/HTML/Owner/...)
+    // HTML/ có depth == 2
+    const prefix = depth >= 3 ? '../' : '';
+
+    fetch(`${prefix}component/header.html`)
+        .then(response => {
+            if (!response.ok) throw new Error('Header not found');
+            return response.text();
+        })
         .then(data => {
-            const headerElement = document.getElementById("header");
-            if(headerElement) {
+            if (headerElement) {
                 headerElement.innerHTML = data;
-                updateHeaderAuth(); // Cập nhật nút Đăng nhập / Đăng ký / Đăng xuất
+                updateHeaderAuth();
             }
         })
-        .catch(error => console.error("Lỗi tải header:", error));
+        .catch(error => console.warn("Lỗi tải header (bỏ qua nếu dùng header tĩnh):", error));
 }
 
 /**
@@ -61,7 +76,6 @@ function updateHeaderAuth() {
     }
 }
 
-// Chạy hàm loadComponents khi trang vừa tải xong
 document.addEventListener("DOMContentLoaded", () => {
     loadComponents();
 });

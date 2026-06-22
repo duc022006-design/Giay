@@ -12,7 +12,6 @@ from .views import (
 )
 
 urlpatterns = [
-    # API endpoints
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/products/', ProductListAPIView.as_view(), name='product-list-api'),
     path('api/products/<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail-api'),

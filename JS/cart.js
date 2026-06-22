@@ -78,7 +78,7 @@ async function updateQuantity(index, newQuantity) {
 
             if (qty > stock) {
                 alert(`Không thể thay đổi. Số lượng yêu cầu (${qty}) vượt quá số lượng tồn kho cho Size ${item.size || 40} (Còn lại: ${stock} sản phẩm).`);
-                renderCart(); // Reset lại hiển thị số lượng cũ
+                renderCart();
                 return;
             }
         }
@@ -88,8 +88,8 @@ async function updateQuantity(index, newQuantity) {
     
     cart[index].quantity = qty;
     localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart(); // Vẽ lại giỏ hàng
-    syncCartToBackend(); // Đồng bộ sang DB
+    renderCart();
+    syncCartToBackend();
 }
 
 /**
@@ -99,10 +99,10 @@ function removeFromCart(index) {
     let cart = JSON.parse(localStorage.getItem('cart'));
     if(!cart) return;
     
-    cart.splice(index, 1); // Xóa phần tử tại vị trí index
+    cart.splice(index, 1);
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
-    syncCartToBackend(); // Đồng bộ sang DB
+    syncCartToBackend();
 }
 
 /**
@@ -153,7 +153,7 @@ async function checkout() {
         const itemsToSync = cart.map(item => ({
             product_id: item.id,
             quantity: item.quantity,
-            size: item.size || 40 // Mặc định size
+            size: item.size || 40
         }));
 
         const syncResponse = await fetch(`${API_BASE_URL}/add-multiple-to-cart/`, {
@@ -179,9 +179,9 @@ async function checkout() {
         });
 
         if (checkoutResponse.ok) {
-            localStorage.removeItem('cart'); // Xóa giỏ hàng cục bộ sau khi mua xong
+            localStorage.removeItem('cart');
             alert("Đặt hàng thành công!");
-            window.location.href = 'index.html'; // Chuyển hướng về trang chủ
+            window.location.href = 'index.html';
         } else {
             const errData = await checkoutResponse.json().catch(() => ({}));
             alert("Thanh toán thất bại: " + (errData.error || "Lỗi không xác định"));
@@ -192,5 +192,4 @@ async function checkout() {
     }
 }
 
-// Chạy hàm hiển thị giỏ hàng khi mở trang
 document.addEventListener("DOMContentLoaded", renderCart);

@@ -64,7 +64,6 @@ class ProductSerializer(serializers.ModelSerializer):
         
         product = Product.objects.create(**validated_data)
         
-        # Parse sizes
         try:
             sizes_list = [int(s.strip()) for s in sizes_str.split(',') if s.strip().isdigit()]
         except Exception:
@@ -99,7 +98,6 @@ class ProductSerializer(serializers.ModelSerializer):
         qty = validated_data.pop('quantity', None)
         size_stocks_str = validated_data.pop('size_stocks', None)
         
-        # Update core fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -117,7 +115,6 @@ class ProductSerializer(serializers.ModelSerializer):
         # Update variants if sizes, quantity, or size_stocks are modified
         if sizes_str is not None or qty is not None or size_stocks_str is not None:
             if sizes_str is None:
-                # Use current sizes
                 sizes_list = list(instance.variants.values_list('size', flat=True).distinct())
             else:
                 try:
