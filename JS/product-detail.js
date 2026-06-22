@@ -153,9 +153,13 @@ function renderProductDetail(product) {
             <div class="quantity-section" style="display: flex; align-items: center; gap: 15px; margin-top: 10px; margin-bottom: 5px;">
                 <span style="font-weight: 600; font-size: 15px; color: #333;">Số lượng:</span>
                 <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <button onclick="changeDetailQuantity(-1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'"><i class='bx bx-minus' style="font-size: 16px; color: #666;"></i></button>
-                    <span id="detail-quantity" style="padding: 0 10px; font-weight: 600; min-width: 30px; text-align: center; font-size: 15px; color: #111;">1</span>
-                    <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'"><i class='bx bx-plus' style="font-size: 16px; color: #666;"></i></button>
+                    <button onclick="changeDetailQuantity(-1)" style="border: none; background: none; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <span id="detail-quantity" style="padding: 0 10px; font-weight: 600; min-width: 30px; text-align: center; font-size: 15px; color: #111; display: flex; align-items: center; justify-content: center;">1</span>
+                    <button onclick="changeDetailQuantity(1)" style="border: none; background: none; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; outline: none;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
                 </div>
                 <span id="selected-size-stock-label" style="font-size: 13px; color: #888;">(Còn lại: ${product.quantity || 0} sản phẩm)</span>
             </div>
